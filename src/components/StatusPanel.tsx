@@ -10,6 +10,14 @@ import { StatusPanelOptions } from 'lib/statusPanelOptionsBuilder';
 import { buildStatusMetricProps } from 'lib/buildStatusMetricProps';
 import { MaybeAnchor } from './MaybeAnchor';
 
+
+const defaultColors = {
+  ok: '#00FF00',      // Green for OK
+  warn: '#FFFF00',    // Yellow for Warning
+  crit: '#FF0000',    // Red for Critical
+  disable: '#F2495C'  // Or any color for Disabled
+};
+
 type StatusType = 'ok' | 'hide' | 'warn' | 'crit' | 'disable' | 'noData';
 type Props = PanelProps<StatusPanelOptions>;
 export const StatusPanel: React.FC<Props> = ({
@@ -21,16 +29,28 @@ export const StatusPanel: React.FC<Props> = ({
   replaceVariables,
   timeZone,
 }) => {
+
+  //DEBUGGING OPTIONS ERROR
+  // console.log('Options:', options);
+  // console.log('Options Colors:', options?.colors);  
+
+  // if (!options.colors) {
+  //   console.error("Colors property is undefined! Full options object:", options);
+  // }
+
+  const fallbackColors = options.colors || defaultColors;
+
   // build styles
   const statusColorClasses = {
-    ok: options.isIgnoreOKColors ? '' : css({ color: options.colors.ok }),
-    warn: css({ color: options.colors.warn }),
-    crit: css({ color: options.colors.crit }),
-    disable: css({ color: options.colors.disable }),
-    noData: css({ color: options.colors.disable }),
+    ok: options.isIgnoreOKColors ? '' : css({ color: fallbackColors.ok }),
+    warn: css({ color: fallbackColors.warn }),  // Use correct colors here
+    crit: css({ color: fallbackColors.crit }),  // and here
+    disable: css({ color: fallbackColors.disable }),  // and here
+    noData: css({ color: fallbackColors.disable }),   // and here, or any other intended color
     hide: css({ display: 'none' }),
   };
 
+  console.log('Options:', options);
   // build props
   let { annotations, disables, crits, warns, displays } = buildStatusMetricProps(
     data,

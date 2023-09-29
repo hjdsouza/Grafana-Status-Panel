@@ -92,6 +92,12 @@ export const statusPanelOptionsBuilder = (builder: PanelOptionsEditorBuilder<Sta
       path: 'colors',
       name: 'Colors',
       editor: StatusColorOptionsEditor,
+      defaultValue: {
+        crit: '#FF0000',  // Red for Critical
+        warn: '#FFFF00',  // Yellow for Warning
+        ok: '#00FF00',    // Green for OK
+        disable: '#F2495C' // Or any color for Disabled
+      },
       category: ['Threshold Options'],
     })
     .addBooleanSwitch({
