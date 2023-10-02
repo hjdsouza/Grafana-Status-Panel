@@ -50,22 +50,27 @@ export function buildStatusMetricProps(
     // determine field status & handle formatting based on value handler
     let fieldStatus: StatusType = config.custom.displayAliasType === 'Always' ? 'ok' : 'hide';
     let displayValue = '';
+    if (!field.state) {
+      console.warn("Unexpected data structure: field.state is not defined.");
+      return; // Skip to the next iteration of the loop
+    }
+
+    if (!field.state.calcs) {
+      console.warn("Unexpected data structure: field.state.calcs is not defined.");
+      console.warn("Unexpected data structure for field:", field);
+      return; // Skip to the next iteration of the loop
+    }
+
+        // Check for the existence of the dynamic property on field.state.calcs
+    if (!(config.custom.aggregation in field.state.calcs)) {
+      console.warn(`Unexpected data structure: field.state.calcs.${config.custom.aggregation} is not defined.`);
+      return; // Skip to the next iteration of the loop
+        }
+
+
     switch (config.custom.thresholds.valueHandler) {
       case 'Number Threshold':
-        console.log('Field:',field);
-        console.log('Config:',config);
-        let value: number;
-        if (field.state && field.state.calcs && typeof field.state.calcs[config.custom.aggregation] === 'number') {
-          value = field.state.calcs[config.custom.aggregation];}
-        else {
-    // Handle the scenario where the value is not available.
-    // For example, set a default value or log an error.
-        value = 0; // Or any other default value
-        console.error("Unexpected data structure: field.state.calcs is not defined.");
-}
-
-
-        // let value: number = field.state.calcs![config.custom.aggregation];
+        let value: number = field.state.calcs![config.custom.aggregation];
         const crit = +config.custom.thresholds.crit;
         const warn = +config.custom.thresholds.warn;
         if ((warn <= crit && crit <= value) || (warn >= crit && crit >= value)) {

@@ -50,7 +50,7 @@ export const StatusPanel: React.FC<Props> = ({
     hide: css({ display: 'none' }),
   };
 
-  console.log('Options:', options);
+  // console.log('Options:', options);
   // build props
   let { annotations, disables, crits, warns, displays } = buildStatusMetricProps(
     data,
