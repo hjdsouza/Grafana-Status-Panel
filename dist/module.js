@@ -605,6 +605,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var hooks_index__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! hooks/index */ "./hooks/index.ts");
 /* harmony import */ var lib_buildStatusMetricProps__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! lib/buildStatusMetricProps */ "./lib/buildStatusMetricProps.ts");
 /* harmony import */ var _MaybeAnchor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./MaybeAnchor */ "./components/MaybeAnchor.tsx");
+/* harmony import */ var lib_aliascontext__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! lib/aliascontext */ "./lib/aliascontext.tsx");
+
 
 
 
@@ -622,9 +624,6 @@ var defaultColors = {
 };
 
 var StatusPanel = function StatusPanel(_a) {
-  //DEBUGGING OPTIONS ERROR
-  // console.log('Options:', options);
-  // console.log('Options Colors:', options?.colors);  
   var data = _a.data,
     options = _a.options,
     fieldConfig = _a.fieldConfig,
@@ -632,9 +631,21 @@ var StatusPanel = function StatusPanel(_a) {
     height = _a.height,
     replaceVariables = _a.replaceVariables,
     timeZone = _a.timeZone;
-  // if (!options.colors) {
-  //   console.error("Colors property is undefined! Full options object:", options);
-  // }
+  // Fetch the aliases 
+  var series = data.series;
+  series.forEach(function (s) {
+    var alias = s.name;
+    console.log('Alias name', alias);
+  });
+  var _b = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_3__["useState"])([]), 2),
+    aliases = _b[0],
+    setAliases = _b[1];
+  Object(react__WEBPACK_IMPORTED_MODULE_3__["useEffect"])(function () {
+    var fetchedAliases = series.map(function (s) {
+      return s.name;
+    }).filter(Boolean);
+    setAliases(fetchedAliases);
+  }, [data]);
   var fallbackColors = options.colors || defaultColors;
   // build styles
   var statusColorClasses = {
@@ -659,12 +670,12 @@ var StatusPanel = function StatusPanel(_a) {
   };
   // console.log('Options:', options);
   // build props
-  var _b = Object(lib_buildStatusMetricProps__WEBPACK_IMPORTED_MODULE_7__["buildStatusMetricProps"])(data, fieldConfig, options, statusColorClasses, replaceVariables, timeZone),
-    annotations = _b.annotations,
-    disables = _b.disables,
-    crits = _b.crits,
-    warns = _b.warns,
-    displays = _b.displays;
+  var _c = Object(lib_buildStatusMetricProps__WEBPACK_IMPORTED_MODULE_7__["buildStatusMetricProps"])(data, fieldConfig, options, statusColorClasses, replaceVariables, timeZone),
+    annotations = _c.annotations,
+    disables = _c.disables,
+    crits = _c.crits,
+    warns = _c.warns,
+    displays = _c.displays;
   // clear other metrics when disabled and hide on disable
   if (options.isHideAlertsOnDisable && disables.length > 0) {
     crits = warns = displays = [];
@@ -677,9 +688,9 @@ var StatusPanel = function StatusPanel(_a) {
     alerts = alerts.slice(0, options.maxAlertNumber);
   }
   // setup flipper
-  var _c = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(react__WEBPACK_IMPORTED_MODULE_3___default.a.useState(true), 2),
-    flipped = _c[0],
-    setFlipped = _c[1];
+  var _d = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(react__WEBPACK_IMPORTED_MODULE_3___default.a.useState(true), 2),
+    flipped = _d[0],
+    setFlipped = _d[1];
   var wrapper = react__WEBPACK_IMPORTED_MODULE_3___default.a.useRef(null);
   var isHover = Object(hooks_index__WEBPACK_IMPORTED_MODULE_6__["useHover"])(wrapper);
   Object(hooks_index__WEBPACK_IMPORTED_MODULE_6__["useInterval"])(function () {
@@ -687,7 +698,9 @@ var StatusPanel = function StatusPanel(_a) {
   }, 1000 * options.flipTime);
   // set panel status and render
   var panelStatus = disables.length ? 'disable' : crits.length ? 'crit' : warns.length ? 'warn' : !data.series.length && options.isGrayOnNoData ? 'noData' : 'ok';
-  return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement("div", {
+  return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(lib_aliascontext__WEBPACK_IMPORTED_MODULE_9__["AliasContext"].Provider, {
+    value: aliases
+  }, react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement("div", {
     ref: wrapper,
     className: Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
       width: width,
@@ -837,7 +850,7 @@ var StatusPanel = function StatusPanel(_a) {
       bottom: '2rem',
       right: '2rem'
     })
-  }));
+  })));
 };
 
 /***/ }),
@@ -846,20 +859,25 @@ var StatusPanel = function StatusPanel(_a) {
 /*!*****************************************************!*\
   !*** ./components/StatusThresholdOptionsEditor.tsx ***!
   \*****************************************************/
-/*! exports provided: StatusThresholdOptionsEditor */
+/*! exports provided: StatusThresholdOptionsEditor, withAliases, EnhancedEditor */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StatusThresholdOptionsEditor", function() { return StatusThresholdOptionsEditor; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "withAliases", function() { return withAliases; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EnhancedEditor", function() { return EnhancedEditor; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "../node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafana/ui */ "@grafana/ui");
 /* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var lib_aliascontext__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lib/aliascontext */ "./lib/aliascontext.tsx");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_3__);
 
 
 
+
+//Creates an array called valueHandlerOptions that stores threshold options
 var valueHandlerOptions = [{
   label: 'Number Threshold',
   value: 'Number Threshold',
@@ -883,51 +901,67 @@ var valueHandlerOptions = [{
 }];
 var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
   var value = _a.value,
-    _onChange = _a.onChange;
-  if (!value) {
-    value = {
-      valueHandler: 'Number Threshold',
-      crit: '90',
-      warn: '70'
-    };
-  }
+    _onChange = _a.onChange,
+    aliases = _a.aliases;
+  var _b, _c, _d;
+  var defaultValue = {
+    valueHandler: 'Number Threshold',
+    crit: '90',
+    warn: '70'
+  };
   var inputType;
-  if (value.valueHandler === 'Number Threshold') {
+  if (((_b = value) === null || _b === void 0 ? void 0 : _b.valueHandler) === 'Number Threshold') {
     inputType = 'number';
-  } else if (value.valueHandler === 'String Threshold') {
+  } else if (((_c = value) === null || _c === void 0 ? void 0 : _c.valueHandler) === 'String Threshold') {
     inputType = 'text';
-  } else if (value.valueHandler === 'Date Threshold') {
+  } else if (((_d = value) === null || _d === void 0 ? void 0 : _d.valueHandler) === 'Date Threshold') {
     inputType = 'datetime-local';
   }
-  return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
-    value: value.valueHandler,
-    options: valueHandlerOptions,
-    onChange: function onChange(_a) {
-      var valueHandler = _a.value;
-      return valueHandler && _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
-        valueHandler: valueHandler
-      }));
-    }
-  }), inputType && react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Critical Value"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
-    value: value.crit,
-    type: inputType,
-    onChange: function onChange(_a) {
-      var crit = _a.currentTarget.value;
-      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
-        crit: crit
-      }));
-    }
-  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Warning Value"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
-    value: value.warn,
-    type: inputType,
-    onChange: function onChange(_a) {
-      var warn = _a.currentTarget.value;
-      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
-        warn: warn
-      }));
-    }
-  })));
+  return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_3___default.a.Fragment, null, aliases.map(function (alias) {
+    var _a, _b, _c;
+    return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement("div", {
+      key: alias
+    }, react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement("h3", null, alias), react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+      value: ((_a = value) === null || _a === void 0 ? void 0 : _a.valueHandler) || defaultValue.valueHandler,
+      options: valueHandlerOptions,
+      onChange: function onChange(_a) {
+        var valueHandler = _a.value;
+        return valueHandler && _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+          valueHandler: valueHandler
+        }));
+      }
+    }), inputType && react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_3___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Critical Value"), react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
+      value: ((_b = value) === null || _b === void 0 ? void 0 : _b.crit) || defaultValue.crit,
+      type: inputType,
+      onChange: function onChange(_a) {
+        var crit = _a.currentTarget.value;
+        return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+          crit: crit
+        }));
+      }
+    }), react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Warning Value"), react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
+      value: ((_c = value) === null || _c === void 0 ? void 0 : _c.warn) || defaultValue.warn,
+      type: inputType,
+      onChange: function onChange(_a) {
+        var warn = _a.currentTarget.value;
+        return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+          warn: warn
+        }));
+      }
+    })));
+  }));
 };
+var withAliases = function withAliases(Component) {
+  return function (props) {
+    var aliasesFromContext = react__WEBPACK_IMPORTED_MODULE_3___default.a.useContext(lib_aliascontext__WEBPACK_IMPORTED_MODULE_2__["AliasContext"]);
+    var aliases = aliasesFromContext || []; // Default to an empty array if context is undefined
+    return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(Component, Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, props, {
+      aliases: aliases
+    }));
+  };
+};
+// Use the HOC to enhance the editor
+var EnhancedEditor = withAliases(StatusThresholdOptionsEditor);
 
 /***/ }),
 
@@ -1065,6 +1099,23 @@ function useInterval(callback, delay) {
   }, [delay]);
 }
 /* harmony default export */ __webpack_exports__["default"] = (useInterval);
+
+/***/ }),
+
+/***/ "./lib/aliascontext.tsx":
+/*!******************************!*\
+  !*** ./lib/aliascontext.tsx ***!
+  \******************************/
+/*! exports provided: AliasContext */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AliasContext", function() { return AliasContext; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+var AliasContext = react__WEBPACK_IMPORTED_MODULE_0___default.a.createContext([]);
 
 /***/ }),
 
@@ -1315,8 +1366,8 @@ var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder) {
       crit: 90
     },
     description: 'The type of data to show to the panel.',
-    editor: components_StatusThresholdOptionsEditor__WEBPACK_IMPORTED_MODULE_0__["StatusThresholdOptionsEditor"],
-    override: components_StatusThresholdOptionsEditor__WEBPACK_IMPORTED_MODULE_0__["StatusThresholdOptionsEditor"],
+    editor: components_StatusThresholdOptionsEditor__WEBPACK_IMPORTED_MODULE_0__["EnhancedEditor"],
+    override: components_StatusThresholdOptionsEditor__WEBPACK_IMPORTED_MODULE_0__["EnhancedEditor"],
     category: ['Threshold Options'],
     process: function process(x) {
       return x;

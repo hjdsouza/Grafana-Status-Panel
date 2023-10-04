@@ -1,5 +1,6 @@
 import { FieldConfigEditorBuilder } from '@grafana/data';
-import { StatusThresholdOptionsEditor, StatusThresholdOptions } from 'components/StatusThresholdOptionsEditor';
+import { StatusThresholdOptionsEditor, StatusThresholdOptions, EnhancedEditor } from 'components/StatusThresholdOptionsEditor';
+
 
 export interface StatusFieldOptions {
   aggregation:
@@ -80,8 +81,8 @@ export const statusFieldOptionsBuilder = (builder: FieldConfigEditorBuilder<Stat
       name: 'Threshold Type',
       defaultValue: { valueHandler: 'Number Threshold', warn: 70, crit: 90 },
       description: 'The type of data to show to the panel.',
-      editor: StatusThresholdOptionsEditor,
-      override: StatusThresholdOptionsEditor,
+      editor: EnhancedEditor,
+      override: EnhancedEditor,
       category: ['Threshold Options'],
       process: x => x,
       shouldApply: () => true,

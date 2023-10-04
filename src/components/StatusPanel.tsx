@@ -2,13 +2,16 @@ import { PanelProps } from '@grafana/data';
 import { IconButton } from '@grafana/ui';
 import { css } from 'emotion';
 import _ from 'lodash';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactCardFlip from 'react-card-flip';
 import { ReactMarquee } from 'components/Marquee';
 import { useHover, useInterval } from 'hooks/index';
 import { StatusPanelOptions } from 'lib/statusPanelOptionsBuilder';
 import { buildStatusMetricProps } from 'lib/buildStatusMetricProps';
 import { MaybeAnchor } from './MaybeAnchor';
+import { AliasContext  } from 'lib/aliascontext';
+
+
 
 
 const defaultColors = {
@@ -30,13 +33,20 @@ export const StatusPanel: React.FC<Props> = ({
   timeZone,
 }) => {
 
-  //DEBUGGING OPTIONS ERROR
-  // console.log('Options:', options);
-  // console.log('Options Colors:', options?.colors);  
 
-  // if (!options.colors) {
-  //   console.error("Colors property is undefined! Full options object:", options);
-  // }
+  // Fetch the aliases 
+  const {series} = data;
+  series.forEach(s => {
+    const alias = s.name;
+    console.log('Alias name', alias)
+  })
+  const [aliases, setAliases] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchedAliases = series.map(s => s.name).filter(Boolean) as string[];
+    setAliases(fetchedAliases);
+}, [data]);
+
 
   const fallbackColors = options.colors || defaultColors;
 
@@ -92,6 +102,7 @@ export const StatusPanel: React.FC<Props> = ({
     : 'ok';
 
   return (
+    <AliasContext.Provider value={aliases}>
     <div
       ref={wrapper}
       className={css(
@@ -218,5 +229,8 @@ export const StatusPanel: React.FC<Props> = ({
         ></IconButton>
       )}
     </div>
+    
+</AliasContext.Provider>
   );
+ 
 };
