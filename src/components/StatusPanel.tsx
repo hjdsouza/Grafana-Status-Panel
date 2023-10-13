@@ -50,7 +50,8 @@ export const StatusPanel: React.FC<Props> = ({
     options,
     statusColorClasses,
     replaceVariables,
-    timeZone
+    timeZone,
+    aliases
   );
 
   // clear other metrics when disabled and hide on disable

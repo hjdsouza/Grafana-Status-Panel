@@ -31,7 +31,8 @@ export function buildStatusMetricProps(
   options: StatusPanelOptions,
   colorClasses: { ok: string; warn: string; crit: string; disable: string; noData: string; hide: string },
   replaceVariables: InterpolateFunction,
-  timeZone: string
+  timeZone: string,
+  aliases: string[]
 ) {
   let annotations: StatusMetricProp[] = [];
   let displays: StatusMetricProp[] = [];
