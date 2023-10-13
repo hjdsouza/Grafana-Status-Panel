@@ -16,6 +16,10 @@ export interface AliasThresholds {
   [alias: string]: StatusThresholdOptions;
 }
 
+export interface StatusThresholdOptionsEditorProps extends FieldOverrideEditorProps<AliasThresholds, any> {
+  aliases?: string[];
+}
+
 const valueHandlerOptions: Array<SelectableValue<StatusThresholdOptions['valueHandler']>> = [
   {
     label: 'Number Threshold',
@@ -47,34 +51,41 @@ const valueHandlerOptions: Array<SelectableValue<StatusThresholdOptions['valueHa
   },
 ];
 
-export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<AliasThresholds, any>> = ({
+export const StatusThresholdOptionsEditor: React.FC<StatusThresholdOptionsEditorProps> = ({
   value,
   onChange,
+  aliases,
 }) => {
-  console.log(value);
-  const addAlias = () => {
-    const newAliasName = prompt("Enter alias name");
-    if (newAliasName) {
-      onChange({ ...value, [newAliasName]: { valueHandler: 'Number Threshold', crit: '90', warn: '70' } });
+  const addAlias = (selectedAlias: string) => {
+    if (selectedAlias) {
+      onChange({ ...value, [selectedAlias]: { valueHandler: 'Number Threshold', crit: '90', warn: '70' } });
     }
   };
-
-  const setThresholdForAlias = (alias: string, threshold: StatusThresholdOptions) => {
-    onChange({ ...value, [alias]: threshold });
-  };
+  // const setThresholdForAlias = (alias: string, threshold: StatusThresholdOptions) => {
+  //   onChange({ ...value, [alias]: threshold });
+  // };
 
   return (
     <>
-      {Object.entries(value || {}).map(([alias, threshold]) => (
+      {(aliases || []).map(alias => (
         <div key={alias}>
           <h4>{alias}</h4>
           <SingleAliasThresholdEditor
-            value={threshold}
-            onChange={(newThreshold) => setThresholdForAlias(alias, newThreshold)}
+            value={value[alias] || { valueHandler: 'Number Threshold', crit: '90', warn: '70' }}
+            onChange={(newThreshold) => {
+              onChange({ ...value, [alias]: newThreshold });
+            }}
           />
         </div>
       ))}
-      <button onClick={addAlias}>Add Alias</button>
+      <Select
+        options={aliases ? aliases.map(alias => ({ label: alias, value: alias })) : []}
+        onChange={selected => {
+          if (selected.value) {
+              addAlias(selected.value);
+          }
+      }}
+      />
     </>
   );
 };

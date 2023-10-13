@@ -614,6 +614,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 var StatusPanel = function StatusPanel(_a) {
   var data = _a.data,
     options = _a.options,
@@ -622,10 +623,16 @@ var StatusPanel = function StatusPanel(_a) {
     height = _a.height,
     replaceVariables = _a.replaceVariables,
     timeZone = _a.timeZone;
-  var aliases = data.series.map(function (series) {
-    return series.name;
-  });
-  console.log('Extracted Aliases:', aliases);
+  var _b = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_3__["useState"])([]), 2),
+    aliases = _b[0],
+    setAliases = _b[1];
+  console.log(aliases);
+  Object(react__WEBPACK_IMPORTED_MODULE_3__["useEffect"])(function () {
+    var newAliases = data.series.map(function (series) {
+      return series.name;
+    }).filter(Boolean);
+    setAliases(newAliases);
+  }, [data.series]);
   // build styles
   var statusColorClasses = {
     ok: options.isIgnoreOKColors ? '' : Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
@@ -648,12 +655,12 @@ var StatusPanel = function StatusPanel(_a) {
     })
   };
   // build props
-  var _b = Object(lib_buildStatusMetricProps__WEBPACK_IMPORTED_MODULE_7__["buildStatusMetricProps"])(data, fieldConfig, options, statusColorClasses, replaceVariables, timeZone),
-    annotations = _b.annotations,
-    disables = _b.disables,
-    crits = _b.crits,
-    warns = _b.warns,
-    displays = _b.displays;
+  var _c = Object(lib_buildStatusMetricProps__WEBPACK_IMPORTED_MODULE_7__["buildStatusMetricProps"])(data, fieldConfig, options, statusColorClasses, replaceVariables, timeZone, aliases),
+    annotations = _c.annotations,
+    disables = _c.disables,
+    crits = _c.crits,
+    warns = _c.warns,
+    displays = _c.displays;
   // clear other metrics when disabled and hide on disable
   if (options.isHideAlertsOnDisable && disables.length > 0) {
     crits = warns = displays = [];
@@ -666,9 +673,9 @@ var StatusPanel = function StatusPanel(_a) {
     alerts = alerts.slice(0, options.maxAlertNumber);
   }
   // setup flipper
-  var _c = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(react__WEBPACK_IMPORTED_MODULE_3___default.a.useState(true), 2),
-    flipped = _c[0],
-    setFlipped = _c[1];
+  var _d = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(react__WEBPACK_IMPORTED_MODULE_3___default.a.useState(true), 2),
+    flipped = _d[0],
+    setFlipped = _d[1];
   var wrapper = react__WEBPACK_IMPORTED_MODULE_3___default.a.useRef(null);
   var isHover = Object(hooks_index__WEBPACK_IMPORTED_MODULE_6__["useHover"])(wrapper);
   Object(hooks_index__WEBPACK_IMPORTED_MODULE_6__["useInterval"])(function () {
@@ -872,42 +879,52 @@ var valueHandlerOptions = [{
 }];
 var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
   var value = _a.value,
-    onChange = _a.onChange;
-  console.log(value);
-  var addAlias = function addAlias() {
+    _onChange = _a.onChange,
+    aliases = _a.aliases;
+  var addAlias = function addAlias(selectedAlias) {
     var _a;
-    var newAliasName = prompt("Enter alias name");
-    if (newAliasName) {
-      onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), (_a = {}, _a[newAliasName] = {
+    if (selectedAlias) {
+      _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), (_a = {}, _a[selectedAlias] = {
         valueHandler: 'Number Threshold',
         crit: '90',
         warn: '70'
       }, _a)));
     }
   };
-  var setThresholdForAlias = function setThresholdForAlias(alias, threshold) {
-    var _a;
-    onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), (_a = {}, _a[alias] = threshold, _a)));
-  };
-  return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, Object.entries(value || {}).map(function (_a) {
-    var _b = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(_a, 2),
-      alias = _b[0],
-      threshold = _b[1];
+  // const setThresholdForAlias = (alias: string, threshold: StatusThresholdOptions) => {
+  //   onChange({ ...value, [alias]: threshold });
+  // };
+  return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, (aliases || []).map(function (alias) {
     return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("div", {
       key: alias
     }, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("h4", null, alias), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(SingleAliasThresholdEditor, {
-      value: threshold,
+      value: value[alias] || {
+        valueHandler: 'Number Threshold',
+        crit: '90',
+        warn: '70'
+      },
       onChange: function onChange(newThreshold) {
-        return setThresholdForAlias(alias, newThreshold);
+        var _a;
+        _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), (_a = {}, _a[alias] = newThreshold, _a)));
       }
     }));
-  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("button", {
-    onClick: addAlias
-  }, "Add Alias"));
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+    options: aliases ? aliases.map(function (alias) {
+      return {
+        label: alias,
+        value: alias
+      };
+    }) : [],
+    onChange: function onChange(selected) {
+      if (selected.value) {
+        addAlias(selected.value);
+      }
+    }
+  }));
 };
 var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
   var value = _a.value,
-    _onChange = _a.onChange;
+    _onChange2 = _a.onChange;
   var inputType;
   if (value.valueHandler === 'Number Threshold') {
     inputType = 'number';
@@ -921,7 +938,7 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
     options: valueHandlerOptions,
     onChange: function onChange(_a) {
       var valueHandler = _a.value;
-      return valueHandler && _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+      return valueHandler && _onChange2(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
         valueHandler: valueHandler
       }));
     }
@@ -930,7 +947,7 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
     type: inputType,
     onChange: function onChange(_a) {
       var crit = _a.currentTarget.value;
-      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+      return _onChange2(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
         crit: crit
       }));
     }
@@ -939,7 +956,7 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
     type: inputType,
     onChange: function onChange(_a) {
       var warn = _a.currentTarget.value;
-      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+      return _onChange2(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
         warn: warn
       }));
     }
@@ -1107,7 +1124,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var aliasStatuses = {};
-function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replaceVariables, timeZone) {
+function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replaceVariables, timeZone, aliases) {
   var annotations = [];
   var displays = [];
   var crits = [];
@@ -1286,7 +1303,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "statusFieldOptionsBuilder", function() { return statusFieldOptionsBuilder; });
 /* harmony import */ var components_StatusThresholdOptionsEditor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! components/StatusThresholdOptionsEditor */ "./components/StatusThresholdOptionsEditor.tsx");
 
-var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder) {
+var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder, aliases) {
+  if (aliases === void 0) {
+    aliases = [];
+  }
   return builder.addSelect({
     path: 'aggregation',
     name: 'Aggregation',
