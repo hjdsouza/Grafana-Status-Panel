@@ -66,6 +66,8 @@ export const StatusPanel: React.FC<Props> = ({
     extraMoreAlerts = alerts.length - options.maxAlertNumber;
     alerts = alerts.slice(0, options.maxAlertNumber);
   }
+  console.log("Alerts:", alerts);
+
 
   // setup flipper
   const [flipped, setFlipped] = React.useState(true);
