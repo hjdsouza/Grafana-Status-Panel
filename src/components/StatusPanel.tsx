@@ -2,24 +2,13 @@ import { PanelProps } from '@grafana/data';
 import { IconButton } from '@grafana/ui';
 import { css } from 'emotion';
 import _ from 'lodash';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import ReactCardFlip from 'react-card-flip';
 import { ReactMarquee } from 'components/Marquee';
 import { useHover, useInterval } from 'hooks/index';
 import { StatusPanelOptions } from 'lib/statusPanelOptionsBuilder';
 import { buildStatusMetricProps } from 'lib/buildStatusMetricProps';
 import { MaybeAnchor } from './MaybeAnchor';
-import { AliasContext  } from 'lib/aliascontext';
-
-
-
-
-const defaultColors = {
-  ok: '#00FF00',      // Green for OK
-  warn: '#FFFF00',    // Yellow for Warning
-  crit: '#FF0000',    // Red for Critical
-  disable: '#F2495C'  // Or any color for Disabled
-};
 
 type StatusType = 'ok' | 'hide' | 'warn' | 'crit' | 'disable' | 'noData';
 type Props = PanelProps<StatusPanelOptions>;
@@ -33,34 +22,19 @@ export const StatusPanel: React.FC<Props> = ({
   timeZone,
 }) => {
 
-
-  // Fetch the aliases 
-  const {series} = data;
-  series.forEach(s => {
-    const alias = s.name;
-    console.log('Alias name', alias)
-  })
-  const [aliases, setAliases] = useState<string[]>([]);
-
-  useEffect(() => {
-    const fetchedAliases = series.map(s => s.name).filter(Boolean) as string[];
-    setAliases(fetchedAliases);
-}, [data]);
-
-
-  const fallbackColors = options.colors || defaultColors;
+  const aliases = data.series.map(series => series.name);
+  console.log('Extracted Aliases:', aliases);
 
   // build styles
   const statusColorClasses = {
-    ok: options.isIgnoreOKColors ? '' : css({ color: fallbackColors.ok }),
-    warn: css({ color: fallbackColors.warn }),  // Use correct colors here
-    crit: css({ color: fallbackColors.crit }),  // and here
-    disable: css({ color: fallbackColors.disable }),  // and here
-    noData: css({ color: fallbackColors.disable }),   // and here, or any other intended color
+    ok: options.isIgnoreOKColors ? '' : css({ color: options.colors.ok }),
+    warn: css({ color: options.colors.warn }),
+    crit: css({ color: options.colors.crit }),
+    disable: css({ color: options.colors.disable }),
+    noData: css({ color: options.colors.disable }),
     hide: css({ display: 'none' }),
   };
 
-  // console.log('Options:', options);
   // build props
   let { annotations, disables, crits, warns, displays } = buildStatusMetricProps(
     data,
@@ -102,7 +76,6 @@ export const StatusPanel: React.FC<Props> = ({
     : 'ok';
 
   return (
-    <AliasContext.Provider value={aliases}>
     <div
       ref={wrapper}
       className={css(
@@ -229,8 +202,5 @@ export const StatusPanel: React.FC<Props> = ({
         ></IconButton>
       )}
     </div>
-    
-</AliasContext.Provider>
   );
- 
 };

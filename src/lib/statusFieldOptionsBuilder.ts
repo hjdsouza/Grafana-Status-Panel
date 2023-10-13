@@ -1,6 +1,5 @@
 import { FieldConfigEditorBuilder } from '@grafana/data';
-import { StatusThresholdOptionsEditor, StatusThresholdOptions, EnhancedEditor } from 'components/StatusThresholdOptionsEditor';
-
+import { StatusThresholdOptionsEditor, StatusThresholdOptions } from 'components/StatusThresholdOptionsEditor';
 
 export interface StatusFieldOptions {
   aggregation:
@@ -23,7 +22,9 @@ export interface StatusFieldOptions {
     | 'step'
     | 'previousDeltaUp';
   valueDisplayRegex: string;
-  thresholds: StatusThresholdOptions;
+  thresholds: {
+    [alias: string]: StatusThresholdOptions | undefined;
+  };
   displayType: 'Regular' | 'Annotation';
   fontFormat: 'Regular' | 'Bold' | 'Italic';
   dateFormat: string;
@@ -81,8 +82,8 @@ export const statusFieldOptionsBuilder = (builder: FieldConfigEditorBuilder<Stat
       name: 'Threshold Type',
       defaultValue: { valueHandler: 'Number Threshold', warn: 70, crit: 90 },
       description: 'The type of data to show to the panel.',
-      editor: EnhancedEditor,
-      override: EnhancedEditor,
+      editor: StatusThresholdOptionsEditor,
+      override: StatusThresholdOptionsEditor,
       category: ['Threshold Options'],
       process: x => x,
       shouldApply: () => true,
@@ -108,16 +109,26 @@ export const statusFieldOptionsBuilder = (builder: FieldConfigEditorBuilder<Stat
         ],
       },
       category: ['Display Options'],
-      showIf: ({ thresholds }) => thresholds.valueHandler !== 'Disable Criteria',
-    })
+      showIf: ({ thresholds }) => {
+        if (!thresholds) {
+            return false;
+        }
+        return Object.values(thresholds).some(threshold => threshold && threshold.valueHandler !== 'Disable Criteria');
+    },
+  })
     .addTextInput({
       path: 'dateFormat',
       name: 'Date Format',
       defaultValue: 'YYYY-MM-DD HH:mm:ss',
       description: 'Specify the Date/Time format (Use "lll" for local date/time format)',
       category: ['Display Options'],
-      showIf: ({ thresholds }) => thresholds.valueHandler === 'Date Threshold',
-    })
+      showIf: ({ thresholds }) => {
+        if (!thresholds) {
+            return false;
+        }
+        return Object.values(thresholds).some(threshold => threshold && threshold.valueHandler !== 'Date Threshold');
+    },
+  })
     .addSelect({
       path: 'displayAliasType',
       name: 'Display Alias',
@@ -138,7 +149,16 @@ export const statusFieldOptionsBuilder = (builder: FieldConfigEditorBuilder<Stat
         ],
       },
       category: ['Display Options'],
-      showIf: ({ thresholds }) => thresholds.valueHandler.slice(-9) === 'Threshold',
+      showIf: ({ thresholds }) => {
+        if (!thresholds) {
+            return false;
+        }
+        return Object.values(thresholds).some(threshold => 
+            threshold && 
+            typeof threshold.valueHandler === 'string' && 
+            threshold.valueHandler.slice(-9) === 'Threshold'
+        );
+    },
     })
     .addSelect({
       path: 'displayValueWithAlias',
@@ -166,12 +186,30 @@ export const statusFieldOptionsBuilder = (builder: FieldConfigEditorBuilder<Stat
         ],
       },
       category: ['Display Options'],
-      showIf: ({ thresholds }) => thresholds.valueHandler.slice(-9) === 'Threshold',
+      showIf: ({ thresholds }) => {
+        if (!thresholds) {
+            return false;
+        }
+        return Object.values(thresholds).some(threshold => 
+            threshold && 
+            typeof threshold.valueHandler === 'string' && 
+            threshold.valueHandler.slice(-9) === 'Threshold'
+        );
+    },
     })
     .addTextInput({
       path: 'disabledValue',
       name: 'Disable Criteria',
       description: 'The exact value which will make this panel to be displayed as disabled',
       category: ['Threshold Options'],
-      showIf: ({ thresholds }) => thresholds.valueHandler === 'Disable Criteria',
+      showIf: ({ thresholds }) => {
+        if (!thresholds) {
+            return false;
+        }
+        return Object.values(thresholds).some(threshold => 
+            threshold && 
+            typeof threshold.valueHandler === 'string' && 
+            threshold.valueHandler.slice(-9) === 'Disable Criteria'
+        );
+    },
     });

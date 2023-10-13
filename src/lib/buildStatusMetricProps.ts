@@ -15,12 +15,16 @@ import _ from 'lodash';
 import { StatusFieldOptions } from 'lib/statusFieldOptionsBuilder';
 import { StatusPanelOptions } from 'lib/statusPanelOptionsBuilder';
 
+//export the aliases variable
+export let aliases: string[] = [];
+
 type StatusType = 'ok' | 'hide' | 'warn' | 'crit' | 'disable' | 'noData';
 interface StatusMetricProp extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
   alias: string;
   displayValue?: string | number;
   link?: LinkModel;
 }
+let aliasStatuses: Record<string, StatusType> = {};
 
 export function buildStatusMetricProps(
   data: PanelData,
@@ -35,6 +39,7 @@ export function buildStatusMetricProps(
   let crits: StatusMetricProp[] = [];
   let warns: StatusMetricProp[] = [];
   let disables: StatusMetricProp[] = [];
+  
   data.series.forEach(df => {
     // find first non-time column
     const field = df.fields.find(field => field.name !== 'Time')!;
@@ -67,17 +72,30 @@ export function buildStatusMetricProps(
       return; // Skip to the next iteration of the loop
         }
 
+// Hannah's code
 
-    switch (config.custom.thresholds.valueHandler) {
-      case 'Number Threshold':
+const aliasName = config.displayName || df.name || df.refId || ''
+if (!aliases.includes(aliasName)) {
+  aliases.push(aliasName);
+}
+const aliasThresholds = config.custom.thresholds[aliasName];
+
+if (!aliasThresholds) {
+    console.warn(`No thresholds defined for alias: ${aliasName}`);
+    return; // Skip to the next iteration of the loop
+}
+
+switch (aliasThresholds.valueHandler) {
+    case 'Number Threshold':
         let value: number = field.state.calcs![config.custom.aggregation];
-        const crit = +config.custom.thresholds.crit;
-        const warn = +config.custom.thresholds.warn;
+        const crit = +aliasThresholds.crit; // Access from aliasThresholds
+        const warn = +aliasThresholds.warn; // Access from aliasThresholds
         if ((warn <= crit && crit <= value) || (warn >= crit && crit >= value)) {
           fieldStatus = 'crit';
         } else if ((warn <= value && value <= crit) || (warn >= value && value >= crit)) {
           fieldStatus = 'warn';
         }
+        
 
         if (!_.isFinite(value)) {
           displayValue = 'Invalid Number';
@@ -93,9 +111,9 @@ export function buildStatusMetricProps(
           displayValue = 'Invalid String';
         }
 
-        if (displayValue === config.custom.thresholds.crit) {
+        if (displayValue === aliasThresholds.crit) {
           fieldStatus = 'crit';
-        } else if (displayValue === config.custom.thresholds.warn) {
+        } else if (displayValue === aliasThresholds.warn) {
           fieldStatus = 'warn';
         }
         break;
@@ -108,9 +126,9 @@ export function buildStatusMetricProps(
 
         displayValue = date.format(config.custom.dateFormat);
 
-        if (val === config.custom.thresholds.crit) {
+        if (val === aliasThresholds.crit) {
           fieldStatus = 'crit';
-        } else if (val === config.custom.thresholds.warn) {
+        } else if (val === aliasThresholds.warn) {
           fieldStatus = 'warn';
         }
         break;
@@ -120,6 +138,9 @@ export function buildStatusMetricProps(
         }
         break;
     }
+    //Hannah's code
+    aliasStatuses[aliasName] = fieldStatus;
+
 
     // only display value when appropriate
     const withAlias = config.custom.displayValueWithAlias;
@@ -147,6 +168,9 @@ export function buildStatusMetricProps(
       displayValue: isDisplayValue ? displayValue : undefined,
       link,
     };
+
+    //print the alias name 
+    console.log("Alias:", props.alias);
 
     // set font format for field
     if (fieldStatus !== 'ok') {
@@ -177,5 +201,13 @@ export function buildStatusMetricProps(
     }
   });
 
-  return { annotations, disables, crits, warns, displays };
+  //Hannah's code
+  let panelStatus: StatusType = 'ok';
+if (Object.values(aliasStatuses).includes('crit')) {
+    panelStatus = 'crit';
+} else if (Object.values(aliasStatuses).includes('warn')) {
+    panelStatus = 'warn';
+}
+
+  return { annotations, disables, crits, warns, displays, panelStatus};
 }

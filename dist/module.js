@@ -605,7 +605,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var hooks_index__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! hooks/index */ "./hooks/index.ts");
 /* harmony import */ var lib_buildStatusMetricProps__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! lib/buildStatusMetricProps */ "./lib/buildStatusMetricProps.ts");
 /* harmony import */ var _MaybeAnchor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./MaybeAnchor */ "./components/MaybeAnchor.tsx");
-/* harmony import */ var lib_aliascontext__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! lib/aliascontext */ "./lib/aliascontext.tsx");
 
 
 
@@ -614,14 +613,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-
-var defaultColors = {
-  ok: '#00FF00',
-  warn: '#FFFF00',
-  crit: '#FF0000',
-  disable: '#F2495C' // Or any color for Disabled
-};
 
 var StatusPanel = function StatusPanel(_a) {
   var data = _a.data,
@@ -631,51 +622,38 @@ var StatusPanel = function StatusPanel(_a) {
     height = _a.height,
     replaceVariables = _a.replaceVariables,
     timeZone = _a.timeZone;
-  // Fetch the aliases 
-  var series = data.series;
-  series.forEach(function (s) {
-    var alias = s.name;
-    console.log('Alias name', alias);
+  var aliases = data.series.map(function (series) {
+    return series.name;
   });
-  var _b = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_3__["useState"])([]), 2),
-    aliases = _b[0],
-    setAliases = _b[1];
-  Object(react__WEBPACK_IMPORTED_MODULE_3__["useEffect"])(function () {
-    var fetchedAliases = series.map(function (s) {
-      return s.name;
-    }).filter(Boolean);
-    setAliases(fetchedAliases);
-  }, [data]);
-  var fallbackColors = options.colors || defaultColors;
+  console.log('Extracted Aliases:', aliases);
   // build styles
   var statusColorClasses = {
     ok: options.isIgnoreOKColors ? '' : Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
-      color: fallbackColors.ok
+      color: options.colors.ok
     }),
     warn: Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
-      color: fallbackColors.warn
+      color: options.colors.warn
     }),
     crit: Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
-      color: fallbackColors.crit
+      color: options.colors.crit
     }),
     disable: Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
-      color: fallbackColors.disable
+      color: options.colors.disable
     }),
     noData: Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
-      color: fallbackColors.disable
+      color: options.colors.disable
     }),
     hide: Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
       display: 'none'
     })
   };
-  // console.log('Options:', options);
   // build props
-  var _c = Object(lib_buildStatusMetricProps__WEBPACK_IMPORTED_MODULE_7__["buildStatusMetricProps"])(data, fieldConfig, options, statusColorClasses, replaceVariables, timeZone),
-    annotations = _c.annotations,
-    disables = _c.disables,
-    crits = _c.crits,
-    warns = _c.warns,
-    displays = _c.displays;
+  var _b = Object(lib_buildStatusMetricProps__WEBPACK_IMPORTED_MODULE_7__["buildStatusMetricProps"])(data, fieldConfig, options, statusColorClasses, replaceVariables, timeZone),
+    annotations = _b.annotations,
+    disables = _b.disables,
+    crits = _b.crits,
+    warns = _b.warns,
+    displays = _b.displays;
   // clear other metrics when disabled and hide on disable
   if (options.isHideAlertsOnDisable && disables.length > 0) {
     crits = warns = displays = [];
@@ -688,9 +666,9 @@ var StatusPanel = function StatusPanel(_a) {
     alerts = alerts.slice(0, options.maxAlertNumber);
   }
   // setup flipper
-  var _d = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(react__WEBPACK_IMPORTED_MODULE_3___default.a.useState(true), 2),
-    flipped = _d[0],
-    setFlipped = _d[1];
+  var _c = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(react__WEBPACK_IMPORTED_MODULE_3___default.a.useState(true), 2),
+    flipped = _c[0],
+    setFlipped = _c[1];
   var wrapper = react__WEBPACK_IMPORTED_MODULE_3___default.a.useRef(null);
   var isHover = Object(hooks_index__WEBPACK_IMPORTED_MODULE_6__["useHover"])(wrapper);
   Object(hooks_index__WEBPACK_IMPORTED_MODULE_6__["useInterval"])(function () {
@@ -698,9 +676,7 @@ var StatusPanel = function StatusPanel(_a) {
   }, 1000 * options.flipTime);
   // set panel status and render
   var panelStatus = disables.length ? 'disable' : crits.length ? 'crit' : warns.length ? 'warn' : !data.series.length && options.isGrayOnNoData ? 'noData' : 'ok';
-  return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(lib_aliascontext__WEBPACK_IMPORTED_MODULE_9__["AliasContext"].Provider, {
-    value: aliases
-  }, react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement("div", {
+  return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement("div", {
     ref: wrapper,
     className: Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
       width: width,
@@ -850,7 +826,7 @@ var StatusPanel = function StatusPanel(_a) {
       bottom: '2rem',
       right: '2rem'
     })
-  })));
+  }));
 };
 
 /***/ }),
@@ -859,25 +835,20 @@ var StatusPanel = function StatusPanel(_a) {
 /*!*****************************************************!*\
   !*** ./components/StatusThresholdOptionsEditor.tsx ***!
   \*****************************************************/
-/*! exports provided: StatusThresholdOptionsEditor, withAliases, EnhancedEditor */
+/*! exports provided: StatusThresholdOptionsEditor */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StatusThresholdOptionsEditor", function() { return StatusThresholdOptionsEditor; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "withAliases", function() { return withAliases; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EnhancedEditor", function() { return EnhancedEditor; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "../node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafana/ui */ "@grafana/ui");
 /* harmony import */ var _grafana_ui__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var lib_aliascontext__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lib/aliascontext */ "./lib/aliascontext.tsx");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
 
 
 
-
-//Creates an array called valueHandlerOptions that stores threshold options
 var valueHandlerOptions = [{
   label: 'Number Threshold',
   value: 'Number Threshold',
@@ -901,67 +872,79 @@ var valueHandlerOptions = [{
 }];
 var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
   var value = _a.value,
-    _onChange = _a.onChange,
-    aliases = _a.aliases;
-  var _b, _c, _d;
-  var defaultValue = {
-    valueHandler: 'Number Threshold',
-    crit: '90',
-    warn: '70'
+    onChange = _a.onChange;
+  console.log(value);
+  var addAlias = function addAlias() {
+    var _a;
+    var newAliasName = prompt("Enter alias name");
+    if (newAliasName) {
+      onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), (_a = {}, _a[newAliasName] = {
+        valueHandler: 'Number Threshold',
+        crit: '90',
+        warn: '70'
+      }, _a)));
+    }
   };
+  var setThresholdForAlias = function setThresholdForAlias(alias, threshold) {
+    var _a;
+    onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), (_a = {}, _a[alias] = threshold, _a)));
+  };
+  return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, Object.entries(value || {}).map(function (_a) {
+    var _b = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(_a, 2),
+      alias = _b[0],
+      threshold = _b[1];
+    return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("div", {
+      key: alias
+    }, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("h4", null, alias), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(SingleAliasThresholdEditor, {
+      value: threshold,
+      onChange: function onChange(newThreshold) {
+        return setThresholdForAlias(alias, newThreshold);
+      }
+    }));
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("button", {
+    onClick: addAlias
+  }, "Add Alias"));
+};
+var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
+  var value = _a.value,
+    _onChange = _a.onChange;
   var inputType;
-  if (((_b = value) === null || _b === void 0 ? void 0 : _b.valueHandler) === 'Number Threshold') {
+  if (value.valueHandler === 'Number Threshold') {
     inputType = 'number';
-  } else if (((_c = value) === null || _c === void 0 ? void 0 : _c.valueHandler) === 'String Threshold') {
+  } else if (value.valueHandler === 'String Threshold') {
     inputType = 'text';
-  } else if (((_d = value) === null || _d === void 0 ? void 0 : _d.valueHandler) === 'Date Threshold') {
+  } else if (value.valueHandler === 'Date Threshold') {
     inputType = 'datetime-local';
   }
-  return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_3___default.a.Fragment, null, aliases.map(function (alias) {
-    var _a, _b, _c;
-    return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement("div", {
-      key: alias
-    }, react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement("h3", null, alias), react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
-      value: ((_a = value) === null || _a === void 0 ? void 0 : _a.valueHandler) || defaultValue.valueHandler,
-      options: valueHandlerOptions,
-      onChange: function onChange(_a) {
-        var valueHandler = _a.value;
-        return valueHandler && _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
-          valueHandler: valueHandler
-        }));
-      }
-    }), inputType && react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_3___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Critical Value"), react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
-      value: ((_b = value) === null || _b === void 0 ? void 0 : _b.crit) || defaultValue.crit,
-      type: inputType,
-      onChange: function onChange(_a) {
-        var crit = _a.currentTarget.value;
-        return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
-          crit: crit
-        }));
-      }
-    }), react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Warning Value"), react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
-      value: ((_c = value) === null || _c === void 0 ? void 0 : _c.warn) || defaultValue.warn,
-      type: inputType,
-      onChange: function onChange(_a) {
-        var warn = _a.currentTarget.value;
-        return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
-          warn: warn
-        }));
-      }
-    })));
-  }));
+  return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+    value: value.valueHandler,
+    options: valueHandlerOptions,
+    onChange: function onChange(_a) {
+      var valueHandler = _a.value;
+      return valueHandler && _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+        valueHandler: valueHandler
+      }));
+    }
+  }), inputType && react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Critical Value"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
+    value: value.crit,
+    type: inputType,
+    onChange: function onChange(_a) {
+      var crit = _a.currentTarget.value;
+      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+        crit: crit
+      }));
+    }
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Warning Value"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
+    value: value.warn,
+    type: inputType,
+    onChange: function onChange(_a) {
+      var warn = _a.currentTarget.value;
+      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+        warn: warn
+      }));
+    }
+  })));
 };
-var withAliases = function withAliases(Component) {
-  return function (props) {
-    var aliasesFromContext = react__WEBPACK_IMPORTED_MODULE_3___default.a.useContext(lib_aliascontext__WEBPACK_IMPORTED_MODULE_2__["AliasContext"]);
-    var aliases = aliasesFromContext || []; // Default to an empty array if context is undefined
-    return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(Component, Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, props, {
-      aliases: aliases
-    }));
-  };
-};
-// Use the HOC to enhance the editor
-var EnhancedEditor = withAliases(StatusThresholdOptionsEditor);
 
 /***/ }),
 
@@ -1102,23 +1085,6 @@ function useInterval(callback, delay) {
 
 /***/ }),
 
-/***/ "./lib/aliascontext.tsx":
-/*!******************************!*\
-  !*** ./lib/aliascontext.tsx ***!
-  \******************************/
-/*! exports provided: AliasContext */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AliasContext", function() { return AliasContext; });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-
-var AliasContext = react__WEBPACK_IMPORTED_MODULE_0___default.a.createContext([]);
-
-/***/ }),
-
 /***/ "./lib/buildStatusMetricProps.ts":
 /*!***************************************!*\
   !*** ./lib/buildStatusMetricProps.ts ***!
@@ -1140,6 +1106,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var aliasStatuses = {};
 function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replaceVariables, timeZone) {
   var annotations = [];
   var displays = [];
@@ -1177,12 +1144,19 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       console.warn("Unexpected data structure: field.state.calcs." + config.custom.aggregation + " is not defined.");
       return; // Skip to the next iteration of the loop
     }
+    // Hannah's code
+    var aliasName = config.displayName || df.name || df.refId || '';
+    var aliasThresholds = config.custom.thresholds[aliasName];
+    if (!aliasThresholds) {
+      console.warn("No thresholds defined for alias: " + aliasName);
+      return; // Skip to the next iteration of the loop
+    }
 
-    switch (config.custom.thresholds.valueHandler) {
+    switch (aliasThresholds.valueHandler) {
       case 'Number Threshold':
         var value = field.state.calcs[config.custom.aggregation];
-        var crit = +config.custom.thresholds.crit;
-        var warn = +config.custom.thresholds.warn;
+        var crit = +aliasThresholds.crit; // Access from aliasThresholds
+        var warn = +aliasThresholds.warn; // Access from aliasThresholds
         if (warn <= crit && crit <= value || warn >= crit && crit >= value) {
           fieldStatus = 'crit';
         } else if (warn <= value && value <= crit || warn >= value && value >= crit) {
@@ -1201,9 +1175,9 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
         if (displayValue === undefined || displayValue === null || displayValue !== displayValue) {
           displayValue = 'Invalid String';
         }
-        if (displayValue === config.custom.thresholds.crit) {
+        if (displayValue === aliasThresholds.crit) {
           fieldStatus = 'crit';
-        } else if (displayValue === config.custom.thresholds.warn) {
+        } else if (displayValue === aliasThresholds.warn) {
           fieldStatus = 'warn';
         }
         break;
@@ -1214,9 +1188,9 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
           date = date.utc();
         }
         displayValue = date.format(config.custom.dateFormat);
-        if (val === config.custom.thresholds.crit) {
+        if (val === aliasThresholds.crit) {
           fieldStatus = 'crit';
-        } else if (val === config.custom.thresholds.warn) {
+        } else if (val === aliasThresholds.warn) {
           fieldStatus = 'warn';
         }
         break;
@@ -1226,6 +1200,8 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
         }
         break;
     }
+    //Hannah's code
+    aliasStatuses[aliasName] = fieldStatus;
     // only display value when appropriate
     var withAlias = config.custom.displayValueWithAlias;
     var isDisplayValue = withAlias === 'When Alias Displayed' || fieldStatus === 'warn' && withAlias === 'Warning / Critical' || fieldStatus === 'crit' && (withAlias === 'Warning / Critical' || withAlias === 'Critical Only');
@@ -1246,6 +1222,8 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       displayValue: isDisplayValue ? displayValue : undefined,
       link: link
     };
+    //print the alias name 
+    console.log("Alias:", props.alias);
     // set font format for field
     if (fieldStatus !== 'ok') {
       if (config.custom.fontFormat === 'Bold') {
@@ -1277,12 +1255,20 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       disables.push(props);
     }
   });
+  //Hannah's code
+  var panelStatus = 'ok';
+  if (Object.values(aliasStatuses).includes('crit')) {
+    panelStatus = 'crit';
+  } else if (Object.values(aliasStatuses).includes('warn')) {
+    panelStatus = 'warn';
+  }
   return {
     annotations: annotations,
     disables: disables,
     crits: crits,
     warns: warns,
-    displays: displays
+    displays: displays,
+    panelStatus: panelStatus
   };
 }
 
@@ -1366,8 +1352,8 @@ var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder) {
       crit: 90
     },
     description: 'The type of data to show to the panel.',
-    editor: components_StatusThresholdOptionsEditor__WEBPACK_IMPORTED_MODULE_0__["EnhancedEditor"],
-    override: components_StatusThresholdOptionsEditor__WEBPACK_IMPORTED_MODULE_0__["EnhancedEditor"],
+    editor: components_StatusThresholdOptionsEditor__WEBPACK_IMPORTED_MODULE_0__["StatusThresholdOptionsEditor"],
+    override: components_StatusThresholdOptionsEditor__WEBPACK_IMPORTED_MODULE_0__["StatusThresholdOptionsEditor"],
     category: ['Threshold Options'],
     process: function process(x) {
       return x;
@@ -1394,7 +1380,12 @@ var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder) {
     category: ['Display Options'],
     showIf: function showIf(_a) {
       var thresholds = _a.thresholds;
-      return thresholds.valueHandler !== 'Disable Criteria';
+      if (!thresholds) {
+        return false;
+      }
+      return Object.values(thresholds).some(function (threshold) {
+        return threshold && threshold.valueHandler !== 'Disable Criteria';
+      });
     }
   }).addTextInput({
     path: 'dateFormat',
@@ -1404,7 +1395,12 @@ var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder) {
     category: ['Display Options'],
     showIf: function showIf(_a) {
       var thresholds = _a.thresholds;
-      return thresholds.valueHandler === 'Date Threshold';
+      if (!thresholds) {
+        return false;
+      }
+      return Object.values(thresholds).some(function (threshold) {
+        return threshold && threshold.valueHandler !== 'Date Threshold';
+      });
     }
   }).addSelect({
     path: 'displayAliasType',
@@ -1425,7 +1421,12 @@ var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder) {
     category: ['Display Options'],
     showIf: function showIf(_a) {
       var thresholds = _a.thresholds;
-      return thresholds.valueHandler.slice(-9) === 'Threshold';
+      if (!thresholds) {
+        return false;
+      }
+      return Object.values(thresholds).some(function (threshold) {
+        return threshold && typeof threshold.valueHandler === 'string' && threshold.valueHandler.slice(-9) === 'Threshold';
+      });
     }
   }).addSelect({
     path: 'displayValueWithAlias',
@@ -1454,7 +1455,12 @@ var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder) {
     category: ['Display Options'],
     showIf: function showIf(_a) {
       var thresholds = _a.thresholds;
-      return thresholds.valueHandler.slice(-9) === 'Threshold';
+      if (!thresholds) {
+        return false;
+      }
+      return Object.values(thresholds).some(function (threshold) {
+        return threshold && typeof threshold.valueHandler === 'string' && threshold.valueHandler.slice(-9) === 'Threshold';
+      });
     }
   }).addTextInput({
     path: 'disabledValue',
@@ -1463,7 +1469,12 @@ var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder) {
     category: ['Threshold Options'],
     showIf: function showIf(_a) {
       var thresholds = _a.thresholds;
-      return thresholds.valueHandler === 'Disable Criteria';
+      if (!thresholds) {
+        return false;
+      }
+      return Object.values(thresholds).some(function (threshold) {
+        return threshold && typeof threshold.valueHandler === 'string' && threshold.valueHandler.slice(-9) === 'Disable Criteria';
+      });
     }
   });
 };
@@ -1524,66 +1535,60 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var components_StatusColorOptionsEditor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! components/StatusColorOptionsEditor */ "./components/StatusColorOptionsEditor.tsx");
 
 var statusPanelOptionsBuilder = function statusPanelOptionsBuilder(builder) {
-  return builder.addTextInput({
-    path: 'clusterName',
-    name: 'Cluster Name',
-    description: '',
-    defaultValue: '',
-    category: ['Panel Options'],
-    settings: {
-      expandTemplateVars: true
-    }
-  }).addTextInput({
-    path: 'clusterUrl',
-    name: 'Cluster URL',
-    description: '',
-    defaultValue: '',
-    category: ['Panel Options'],
-    settings: {
-      expandTemplateVars: true
-    }
-  }).addBooleanSwitch({
-    path: 'clusterTargetBlank',
-    name: 'Open Cluster URL in new tab',
-    defaultValue: false,
-    category: ['Panel Options'],
-    showIf: function showIf(_a) {
-      var clusterUrl = _a.clusterUrl;
-      return !!clusterUrl;
-    }
-  }).addTextInput({
-    path: 'namePrefix',
-    name: 'Remove Prefix',
-    defaultValue: '',
-    description: 'A prefix to remove from the name (helpful when repeating panel over a template)',
-    category: ['Panel Options']
-  }).addNumberInput({
-    path: 'maxAlertNumber',
-    name: 'Max Alerts',
-    defaultValue: -1,
-    description: 'Max alerts number to show in the panel. In case value is less than zero, show all alerts',
-    category: ['Panel Options']
-  }).addTextInput({
-    path: 'cornerRadius',
-    name: 'Corner Radius',
-    defaultValue: '0rem',
-    description: 'The corner radius to apply the panel. Values are used for the border-radius CSS attribute.',
-    category: ['Panel Options']
-  }).addBooleanSwitch({
-    path: 'flipCard',
-    name: 'Flip Panel',
-    defaultValue: false,
-    category: ['Panel Options']
-  }).addNumberInput({
-    path: 'flipTime',
-    name: 'Flip interval',
-    defaultValue: 5,
-    category: ['Panel Options'],
-    showIf: function showIf(_a) {
-      var flipCard = _a.flipCard;
-      return flipCard;
-    }
-  }).addSelect({
+  return builder
+  // .addTextInput({
+  //   path: 'clusterName',
+  //   name: 'Cluster Name',
+  //   description: '',
+  //   defaultValue: '',
+  //   category: ['Panel Options'],
+  //   settings: { expandTemplateVars: true },
+  // })
+  // .addTextInput({
+  //   path: 'clusterUrl',
+  //   name: 'Cluster URL',
+  //   description: '',
+  //   defaultValue: '',
+  //   category: ['Panel Options'],
+  //   settings: { expandTemplateVars: true },
+  // })
+  // .addBooleanSwitch({
+  //   path: 'clusterTargetBlank',
+  //   name: 'Open Cluster URL in new tab',
+  //   defaultValue: false,
+  //   category: ['Panel Options'],
+  //   showIf: ({ clusterUrl }) => !!clusterUrl,
+  // })
+  // .addTextInput({
+  //   path: 'namePrefix',
+  //   name: 'Remove Prefix',
+  //   defaultValue: '',
+  //   description: 'A prefix to remove from the name (helpful when repeating panel over a template)',
+  //   category: ['Panel Options'],
+  // })
+  // .addNumberInput({
+  //   path: 'maxAlertNumber',
+  //   name: 'Max Alerts',
+  //   defaultValue: -1,
+  //   description: 'Max alerts number to show in the panel. In case value is less than zero, show all alerts',
+  //   category: ['Panel Options'],
+  // })
+  // .addTextInput({
+  //   path: 'cornerRadius',
+  //   name: 'Corner Radius',
+  //   defaultValue: '0rem',
+  //   description: 'The corner radius to apply the panel. Values are used for the border-radius CSS attribute.',
+  //   category: ['Panel Options'],
+  // })
+  // .addBooleanSwitch({ path: 'flipCard', name: 'Flip Panel', defaultValue: false, category: ['Panel Options'] })
+  // .addNumberInput({
+  //   path: 'flipTime',
+  //   name: 'Flip interval',
+  //   defaultValue: 5,
+  //   category: ['Panel Options'],
+  //   showIf: ({ flipCard }) => flipCard,
+  // })
+  .addSelect({
     path: 'colorMode',
     name: 'Coloring Mode',
     description: '',
@@ -1619,28 +1624,32 @@ var statusPanelOptionsBuilder = function statusPanelOptionsBuilder(builder) {
     },
 
     category: ['Threshold Options']
-  }).addBooleanSwitch({
-    path: 'isAutoScrollOnOverflow',
-    name: 'Auto scroll alerts on overflow',
-    defaultValue: false,
-    category: ['Other Options']
-  }).addBooleanSwitch({
-    path: 'isGrayOnNoData',
-    name: "Use 'Disable' color if no data",
-    defaultValue: false,
-    category: ['Other Options']
-  }).addBooleanSwitch({
-    path: 'isIgnoreOKColors',
-    name: 'Ignore color in OK state',
-    defaultValue: false,
-    category: ['Other Options']
-  }).addBooleanSwitch({
-    path: 'isHideAlertsOnDisable',
-    name: 'Hide alerts in Disabled state',
-    defaultValue: false,
-    category: ['Other Options']
   });
 };
+// .addBooleanSwitch({
+//   path: 'isAutoScrollOnOverflow',
+//   name: 'Auto scroll alerts on overflow',
+//   defaultValue: false,
+//   category: ['Other Options'],
+// })
+// .addBooleanSwitch({
+//   path: 'isGrayOnNoData',
+//   name: "Use 'Disable' color if no data",
+//   defaultValue: false,
+//   category: ['Other Options'],
+// })
+// .addBooleanSwitch({
+//   path: 'isIgnoreOKColors',
+//   name: 'Ignore color in OK state',
+//   defaultValue: false,
+//   category: ['Other Options'],
+// })
+// .addBooleanSwitch({
+//   path: 'isHideAlertsOnDisable',
+//   name: 'Hide alerts in Disabled state',
+//   defaultValue: false,
+//   category: ['Other Options'],
+// });
 
 /***/ }),
 
