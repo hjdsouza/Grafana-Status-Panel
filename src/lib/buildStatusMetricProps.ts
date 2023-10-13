@@ -15,8 +15,7 @@ import _ from 'lodash';
 import { StatusFieldOptions } from 'lib/statusFieldOptionsBuilder';
 import { StatusPanelOptions } from 'lib/statusPanelOptionsBuilder';
 
-//export the aliases variable
-export let aliases: string[] = [];
+
 
 type StatusType = 'ok' | 'hide' | 'warn' | 'crit' | 'disable' | 'noData';
 interface StatusMetricProp extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
@@ -75,9 +74,7 @@ export function buildStatusMetricProps(
 // Hannah's code
 
 const aliasName = config.displayName || df.name || df.refId || ''
-if (!aliases.includes(aliasName)) {
-  aliases.push(aliasName);
-}
+
 const aliasThresholds = config.custom.thresholds[aliasName];
 
 if (!aliasThresholds) {

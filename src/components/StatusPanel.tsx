@@ -9,6 +9,8 @@ import { useHover, useInterval } from 'hooks/index';
 import { StatusPanelOptions } from 'lib/statusPanelOptionsBuilder';
 import { buildStatusMetricProps } from 'lib/buildStatusMetricProps';
 import { MaybeAnchor } from './MaybeAnchor';
+import { useState, useEffect } from 'react';
+
 
 type StatusType = 'ok' | 'hide' | 'warn' | 'crit' | 'disable' | 'noData';
 type Props = PanelProps<StatusPanelOptions>;
@@ -21,9 +23,15 @@ export const StatusPanel: React.FC<Props> = ({
   replaceVariables,
   timeZone,
 }) => {
+  const [aliases, setAliases] = useState<string[]>([]);
+  console.log(aliases);
 
-  const aliases = data.series.map(series => series.name);
-  console.log('Extracted Aliases:', aliases);
+  useEffect(() => {
+    const newAliases = data.series.map(series => series.name).filter(Boolean) as string[];
+    setAliases(newAliases);
+}, [data.series]);
+
+
 
   // build styles
   const statusColorClasses = {
