@@ -876,7 +876,13 @@ var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
     onChange = _a.onChange;
   var _b = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_2__["useState"])(''), 2),
     newAliasName = _b[0],
-    setNewAliasName = _b[1]; // New state for the input
+    setNewAliasName = _b[1];
+  var _c = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_2__["useState"])(null), 2),
+    editAlias = _c[0],
+    setEditAlias = _c[1];
+  var _d = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_2__["useState"])(''), 2),
+    editedAliasName = _d[0],
+    setEditedAliasName = _d[1];
   var addAlias = function addAlias() {
     var _a;
     if (newAliasName) {
@@ -889,6 +895,20 @@ var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
     }
   };
 
+  var startEditAlias = function startEditAlias(alias) {
+    setEditAlias(alias);
+    setEditedAliasName(alias);
+  };
+  var saveEditedAlias = function saveEditedAlias() {
+    if (editAlias && editedAliasName) {
+      var updatedValue = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value);
+      updatedValue[editedAliasName] = updatedValue[editAlias];
+      delete updatedValue[editAlias];
+      onChange(updatedValue);
+      setEditAlias(null);
+      setEditedAliasName('');
+    }
+  };
   var deleteAlias = function deleteAlias(aliasToDelete) {
     var updatedValue = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value);
     delete updatedValue[aliasToDelete];
@@ -904,12 +924,23 @@ var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
       threshold = _b[1];
     return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("div", {
       key: alias
-    }, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("h4", null, alias, " ", react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+    }, editAlias === alias ? react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
+      value: editedAliasName,
+      onChange: function onChange(e) {
+        return setEditedAliasName(e.currentTarget.value);
+      }
+    }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+      onClick: saveEditedAlias
+    }, "Save")) : react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("h4", null, alias), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+      onClick: function onClick() {
+        return startEditAlias(alias);
+      }
+    }, "Edit")), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Button"], {
       variant: "destructive",
       onClick: function onClick() {
         return deleteAlias(alias);
       }
-    }, "Delete")), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(SingleAliasThresholdEditor, {
+    }, "Delete"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(SingleAliasThresholdEditor, {
       value: threshold,
       onChange: function onChange(newThreshold) {
         return setThresholdForAlias(alias, newThreshold);

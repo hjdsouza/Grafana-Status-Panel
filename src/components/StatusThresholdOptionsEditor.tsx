@@ -52,12 +52,30 @@ export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<Ali
   value,
   onChange,
 }) => {
-  const [newAliasName, setNewAliasName] = useState('');  // New state for the input
+  const [newAliasName, setNewAliasName] = useState('');
+  const [editAlias, setEditAlias] = useState<string | null>(null);
+  const [editedAliasName, setEditedAliasName] = useState('');
 
   const addAlias = () => {
     if (newAliasName) {
       onChange({ ...value, [newAliasName]: { valueHandler: 'Number Threshold', crit: '90', warn: '70' } });
       setNewAliasName('');  // Reset the input after adding
+    }
+  };
+
+  const startEditAlias = (alias: string) => {
+    setEditAlias(alias);
+    setEditedAliasName(alias);
+  };
+
+  const saveEditedAlias = () => {
+    if (editAlias && editedAliasName) {
+      const updatedValue = { ...value };
+      updatedValue[editedAliasName] = updatedValue[editAlias];
+      delete updatedValue[editAlias];
+      onChange(updatedValue);
+      setEditAlias(null);
+      setEditedAliasName('');
     }
   };
 
@@ -75,7 +93,18 @@ export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<Ali
     <>
       {Object.entries(value || {}).map(([alias, threshold]) => (
         <div key={alias}>
-          <h4>{alias} <Button variant="destructive" onClick={() => deleteAlias(alias)}>Delete</Button></h4>
+          {editAlias === alias ? (
+            <>
+              <Input value={editedAliasName} onChange={e => setEditedAliasName(e.currentTarget.value)} />
+              <Button onClick={saveEditedAlias}>Save</Button>
+            </>
+          ) : (
+            <>
+              <h4>{alias}</h4>
+              <Button onClick={() => startEditAlias(alias)}>Edit</Button>
+            </>
+          )}
+          <Button variant="destructive" onClick={() => deleteAlias(alias)}>Delete</Button>
           <SingleAliasThresholdEditor
             value={threshold}
             onChange={(newThreshold) => setThresholdForAlias(alias, newThreshold)}
