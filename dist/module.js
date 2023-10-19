@@ -1371,6 +1371,9 @@ var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder) {
       }, {
         label: 'Delta',
         value: 'delta'
+      }, {
+        label: 'Data Age',
+        value: 'dataage'
       }]
     },
     category: ['Display Options']

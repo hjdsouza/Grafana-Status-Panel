@@ -49,6 +49,7 @@ export const statusFieldOptionsBuilder = (builder: FieldConfigEditorBuilder<Stat
           { label: 'Sum', value: 'sum' },
           { label: 'Avg', value: 'mean' },
           { label: 'Delta', value: 'delta' },
+          { label: 'Data Age', value: 'dataage' }
         ],
       },
       category: ['Display Options'],
