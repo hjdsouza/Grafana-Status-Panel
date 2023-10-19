@@ -33,9 +33,8 @@ export interface StatusFieldOptions {
   disabledValue: string;
 }
 
-export const statusFieldOptionsBuilder = (builder: FieldConfigEditorBuilder<StatusFieldOptions>, aliases: string[] = []) =>
+export const statusFieldOptionsBuilder = (builder: FieldConfigEditorBuilder<StatusFieldOptions>) =>
   builder
-
     .addSelect({
       path: 'aggregation',
       name: 'Aggregation',
@@ -77,16 +76,14 @@ export const statusFieldOptionsBuilder = (builder: FieldConfigEditorBuilder<Stat
       },
       category: ['Display Options'],
     })
-    
-
     .addCustomEditor({
       path: 'thresholds',
       id: 'thresholds',
       name: 'Threshold Type',
       defaultValue: { valueHandler: 'Number Threshold', warn: 70, crit: 90 },
       description: 'The type of data to show to the panel.',
-      editor: StatusThresholdOptionsEditor as any,
-      override:StatusThresholdOptionsEditor as any,
+      editor: StatusThresholdOptionsEditor,
+      override: StatusThresholdOptionsEditor,
       category: ['Threshold Options'],
       process: x => x,
       shouldApply: () => true,

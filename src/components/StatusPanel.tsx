@@ -9,8 +9,6 @@ import { useHover, useInterval } from 'hooks/index';
 import { StatusPanelOptions } from 'lib/statusPanelOptionsBuilder';
 import { buildStatusMetricProps } from 'lib/buildStatusMetricProps';
 import { MaybeAnchor } from './MaybeAnchor';
-import { useState, useEffect } from 'react';
-
 
 type StatusType = 'ok' | 'hide' | 'warn' | 'crit' | 'disable' | 'noData';
 type Props = PanelProps<StatusPanelOptions>;
@@ -23,15 +21,9 @@ export const StatusPanel: React.FC<Props> = ({
   replaceVariables,
   timeZone,
 }) => {
-  const [aliases, setAliases] = useState<string[]>([]);
-  console.log(aliases);
 
-  useEffect(() => {
-    const newAliases = data.series.map(series => series.name).filter(Boolean) as string[];
-    setAliases(newAliases);
-}, [data.series]);
-
-
+  const aliases = data.series.map(series => series.name);
+  console.log('Extracted Aliases:', aliases);
 
   // build styles
   const statusColorClasses = {
@@ -50,8 +42,7 @@ export const StatusPanel: React.FC<Props> = ({
     options,
     statusColorClasses,
     replaceVariables,
-    timeZone,
-    aliases
+    timeZone
   );
 
   // clear other metrics when disabled and hide on disable
@@ -66,8 +57,6 @@ export const StatusPanel: React.FC<Props> = ({
     extraMoreAlerts = alerts.length - options.maxAlertNumber;
     alerts = alerts.slice(0, options.maxAlertNumber);
   }
-  console.log("Alerts:", alerts);
-
 
   // setup flipper
   const [flipped, setFlipped] = React.useState(true);

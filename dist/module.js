@@ -614,7 +614,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
 var StatusPanel = function StatusPanel(_a) {
   var data = _a.data,
     options = _a.options,
@@ -623,16 +622,10 @@ var StatusPanel = function StatusPanel(_a) {
     height = _a.height,
     replaceVariables = _a.replaceVariables,
     timeZone = _a.timeZone;
-  var _b = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_3__["useState"])([]), 2),
-    aliases = _b[0],
-    setAliases = _b[1];
-  console.log(aliases);
-  Object(react__WEBPACK_IMPORTED_MODULE_3__["useEffect"])(function () {
-    var newAliases = data.series.map(function (series) {
-      return series.name;
-    }).filter(Boolean);
-    setAliases(newAliases);
-  }, [data.series]);
+  var aliases = data.series.map(function (series) {
+    return series.name;
+  });
+  console.log('Extracted Aliases:', aliases);
   // build styles
   var statusColorClasses = {
     ok: options.isIgnoreOKColors ? '' : Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
@@ -655,12 +648,12 @@ var StatusPanel = function StatusPanel(_a) {
     })
   };
   // build props
-  var _c = Object(lib_buildStatusMetricProps__WEBPACK_IMPORTED_MODULE_7__["buildStatusMetricProps"])(data, fieldConfig, options, statusColorClasses, replaceVariables, timeZone, aliases),
-    annotations = _c.annotations,
-    disables = _c.disables,
-    crits = _c.crits,
-    warns = _c.warns,
-    displays = _c.displays;
+  var _b = Object(lib_buildStatusMetricProps__WEBPACK_IMPORTED_MODULE_7__["buildStatusMetricProps"])(data, fieldConfig, options, statusColorClasses, replaceVariables, timeZone),
+    annotations = _b.annotations,
+    disables = _b.disables,
+    crits = _b.crits,
+    warns = _b.warns,
+    displays = _b.displays;
   // clear other metrics when disabled and hide on disable
   if (options.isHideAlertsOnDisable && disables.length > 0) {
     crits = warns = displays = [];
@@ -673,9 +666,9 @@ var StatusPanel = function StatusPanel(_a) {
     alerts = alerts.slice(0, options.maxAlertNumber);
   }
   // setup flipper
-  var _d = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(react__WEBPACK_IMPORTED_MODULE_3___default.a.useState(true), 2),
-    flipped = _d[0],
-    setFlipped = _d[1];
+  var _c = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(react__WEBPACK_IMPORTED_MODULE_3___default.a.useState(true), 2),
+    flipped = _c[0],
+    setFlipped = _c[1];
   var wrapper = react__WEBPACK_IMPORTED_MODULE_3___default.a.useRef(null);
   var isHover = Object(hooks_index__WEBPACK_IMPORTED_MODULE_6__["useHover"])(wrapper);
   Object(hooks_index__WEBPACK_IMPORTED_MODULE_6__["useInterval"])(function () {
@@ -856,6 +849,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 var valueHandlerOptions = [{
   label: 'Number Threshold',
   value: 'Number Threshold',
@@ -879,52 +873,61 @@ var valueHandlerOptions = [{
 }];
 var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
   var value = _a.value,
-    _onChange = _a.onChange,
-    aliases = _a.aliases;
-  var addAlias = function addAlias(selectedAlias) {
+    onChange = _a.onChange;
+  var _b = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_2__["useState"])(''), 2),
+    newAliasName = _b[0],
+    setNewAliasName = _b[1]; // New state for the input
+  var addAlias = function addAlias() {
     var _a;
-    if (selectedAlias) {
-      _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), (_a = {}, _a[selectedAlias] = {
+    if (newAliasName) {
+      onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), (_a = {}, _a[newAliasName] = {
         valueHandler: 'Number Threshold',
         crit: '90',
         warn: '70'
       }, _a)));
+      setNewAliasName(''); // Reset the input after adding
     }
   };
-  // const setThresholdForAlias = (alias: string, threshold: StatusThresholdOptions) => {
-  //   onChange({ ...value, [alias]: threshold });
-  // };
-  return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, (aliases || []).map(function (alias) {
+
+  var deleteAlias = function deleteAlias(aliasToDelete) {
+    var updatedValue = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value);
+    delete updatedValue[aliasToDelete];
+    onChange(updatedValue);
+  };
+  var setThresholdForAlias = function setThresholdForAlias(alias, threshold) {
+    var _a;
+    onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), (_a = {}, _a[alias] = threshold, _a)));
+  };
+  return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, Object.entries(value || {}).map(function (_a) {
+    var _b = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(_a, 2),
+      alias = _b[0],
+      threshold = _b[1];
     return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("div", {
       key: alias
-    }, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("h4", null, alias), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(SingleAliasThresholdEditor, {
-      value: value[alias] || {
-        valueHandler: 'Number Threshold',
-        crit: '90',
-        warn: '70'
-      },
+    }, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("h4", null, alias, " ", react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+      variant: "destructive",
+      onClick: function onClick() {
+        return deleteAlias(alias);
+      }
+    }, "Delete")), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(SingleAliasThresholdEditor, {
+      value: threshold,
       onChange: function onChange(newThreshold) {
-        var _a;
-        _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), (_a = {}, _a[alias] = newThreshold, _a)));
+        return setThresholdForAlias(alias, newThreshold);
       }
     }));
-  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
-    options: aliases ? aliases.map(function (alias) {
-      return {
-        label: alias,
-        value: alias
-      };
-    }) : [],
-    onChange: function onChange(selected) {
-      if (selected.value) {
-        addAlias(selected.value);
-      }
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
+    placeholder: "Enter alias name",
+    value: newAliasName,
+    onChange: function onChange(e) {
+      return setNewAliasName(e.currentTarget.value);
     }
-  }));
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+    onClick: addAlias
+  }, "Add Alias")));
 };
 var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
   var value = _a.value,
-    _onChange2 = _a.onChange;
+    _onChange = _a.onChange;
   var inputType;
   if (value.valueHandler === 'Number Threshold') {
     inputType = 'number';
@@ -938,7 +941,7 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
     options: valueHandlerOptions,
     onChange: function onChange(_a) {
       var valueHandler = _a.value;
-      return valueHandler && _onChange2(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+      return valueHandler && _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
         valueHandler: valueHandler
       }));
     }
@@ -947,7 +950,7 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
     type: inputType,
     onChange: function onChange(_a) {
       var crit = _a.currentTarget.value;
-      return _onChange2(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
         crit: crit
       }));
     }
@@ -956,7 +959,7 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
     type: inputType,
     onChange: function onChange(_a) {
       var warn = _a.currentTarget.value;
-      return _onChange2(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
         warn: warn
       }));
     }
@@ -1106,11 +1109,12 @@ function useInterval(callback, delay) {
 /*!***************************************!*\
   !*** ./lib/buildStatusMetricProps.ts ***!
   \***************************************/
-/*! exports provided: buildStatusMetricProps */
+/*! exports provided: aliases, buildStatusMetricProps */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "aliases", function() { return aliases; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "buildStatusMetricProps", function() { return buildStatusMetricProps; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "../node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _grafana_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @grafana/data */ "@grafana/data");
@@ -1123,8 +1127,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+//export the aliases variable
+var aliases = [];
 var aliasStatuses = {};
-function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replaceVariables, timeZone, aliases) {
+function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replaceVariables, timeZone) {
   var annotations = [];
   var displays = [];
   var crits = [];
@@ -1163,6 +1169,9 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
     }
     // Hannah's code
     var aliasName = config.displayName || df.name || df.refId || '';
+    if (!aliases.includes(aliasName)) {
+      aliases.push(aliasName);
+    }
     var aliasThresholds = config.custom.thresholds[aliasName];
     if (!aliasThresholds) {
       console.warn("No thresholds defined for alias: " + aliasName);
@@ -1303,10 +1312,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "statusFieldOptionsBuilder", function() { return statusFieldOptionsBuilder; });
 /* harmony import */ var components_StatusThresholdOptionsEditor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! components/StatusThresholdOptionsEditor */ "./components/StatusThresholdOptionsEditor.tsx");
 
-var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder, aliases) {
-  if (aliases === void 0) {
-    aliases = [];
-  }
+var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder) {
   return builder.addSelect({
     path: 'aggregation',
     name: 'Aggregation',

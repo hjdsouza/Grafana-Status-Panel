@@ -1,6 +1,7 @@
 import { FieldOverrideEditorProps, SelectableValue } from '@grafana/data';
-import { Input, Label, Select } from '@grafana/ui';
+import { Button, Input, Label, Select } from '@grafana/ui';
 import React from 'react';
+import {useState} from 'react';
 
 
 
@@ -14,10 +15,6 @@ export interface StatusThresholdOptions {
 
 export interface AliasThresholds {
   [alias: string]: StatusThresholdOptions;
-}
-
-export interface StatusThresholdOptionsEditorProps extends FieldOverrideEditorProps<AliasThresholds, any> {
-  aliases?: string[];
 }
 
 const valueHandlerOptions: Array<SelectableValue<StatusThresholdOptions['valueHandler']>> = [
@@ -51,41 +48,44 @@ const valueHandlerOptions: Array<SelectableValue<StatusThresholdOptions['valueHa
   },
 ];
 
-export const StatusThresholdOptionsEditor: React.FC<StatusThresholdOptionsEditorProps> = ({
+export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<AliasThresholds, any>> = ({
   value,
   onChange,
-  aliases,
 }) => {
-  const addAlias = (selectedAlias: string) => {
-    if (selectedAlias) {
-      onChange({ ...value, [selectedAlias]: { valueHandler: 'Number Threshold', crit: '90', warn: '70' } });
+  const [newAliasName, setNewAliasName] = useState('');  // New state for the input
+
+  const addAlias = () => {
+    if (newAliasName) {
+      onChange({ ...value, [newAliasName]: { valueHandler: 'Number Threshold', crit: '90', warn: '70' } });
+      setNewAliasName('');  // Reset the input after adding
     }
   };
-  // const setThresholdForAlias = (alias: string, threshold: StatusThresholdOptions) => {
-  //   onChange({ ...value, [alias]: threshold });
-  // };
+
+  const deleteAlias = (aliasToDelete: string) => {
+    const updatedValue = { ...value };
+    delete updatedValue[aliasToDelete];
+    onChange(updatedValue);
+  };
+
+  const setThresholdForAlias = (alias: string, threshold: StatusThresholdOptions) => {
+    onChange({ ...value, [alias]: threshold });
+  };
 
   return (
     <>
-      {(aliases || []).map(alias => (
+      {Object.entries(value || {}).map(([alias, threshold]) => (
         <div key={alias}>
-          <h4>{alias}</h4>
+          <h4>{alias} <Button variant="destructive" onClick={() => deleteAlias(alias)}>Delete</Button></h4>
           <SingleAliasThresholdEditor
-            value={value[alias] || { valueHandler: 'Number Threshold', crit: '90', warn: '70' }}
-            onChange={(newThreshold) => {
-              onChange({ ...value, [alias]: newThreshold });
-            }}
+            value={threshold}
+            onChange={(newThreshold) => setThresholdForAlias(alias, newThreshold)}
           />
         </div>
       ))}
-      <Select
-        options={aliases ? aliases.map(alias => ({ label: alias, value: alias })) : []}
-        onChange={selected => {
-          if (selected.value) {
-              addAlias(selected.value);
-          }
-      }}
-      />
+      <div>
+        <Input placeholder="Enter alias name" value={newAliasName} onChange={e => setNewAliasName(e.currentTarget.value)} />
+        <Button onClick={addAlias}>Add Alias</Button>
+      </div>
     </>
   );
 };
