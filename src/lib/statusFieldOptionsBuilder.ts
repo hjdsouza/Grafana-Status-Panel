@@ -20,7 +20,9 @@ export interface StatusFieldOptions {
     | 'diff'
     | 'delta'
     | 'step'
-    | 'previousDeltaUp';
+    | 'previousDeltaUp'
+    | 'dataage';
+    
   valueDisplayRegex: string;
   thresholds: {
     [alias: string]: StatusThresholdOptions | undefined;

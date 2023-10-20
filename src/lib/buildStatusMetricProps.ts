@@ -39,7 +39,7 @@ export function buildStatusMetricProps(
   let crits: StatusMetricProp[] = [];
   let warns: StatusMetricProp[] = [];
   let disables: StatusMetricProp[] = [];
-  
+
   data.series.forEach(df => {
     // find first non-time column
     const field = df.fields.find(field => field.name !== 'Time')!;
@@ -66,77 +66,126 @@ export function buildStatusMetricProps(
       return; // Skip to the next iteration of the loop
     }
 
-        // Check for the existence of the dynamic property on field.state.calcs
-    if (!(config.custom.aggregation in field.state.calcs)) {
-      console.warn(`Unexpected data structure: field.state.calcs.${config.custom.aggregation} is not defined.`);
+    console.log(field.state.calcs);
+
+    // Check for the existence of the dynamic property on field.state.calcs
+    // if (!(config.custom.aggregation in field.state.calcs)) {
+    //   console.warn(`Unexpected data structure: field.state.calcs.${config.custom.aggregation} is not defined.`);
+    //   return; // Skip to the next iteration of the loop
+    //     }
+
+
+
+
+
+
+    // Hannah's code
+
+    const aliasName = config.displayName || df.name || df.refId || ''
+    if (!aliases.includes(aliasName)) {
+      aliases.push(aliasName);
+    }
+    const aliasThresholds = config.custom.thresholds[aliasName];
+
+    if (!aliasThresholds) {
+      console.warn(`No thresholds defined for alias: ${aliasName}`);
       return; // Skip to the next iteration of the loop
-        }
+    }
 
-// Hannah's code
+    console.log("Available calcs:", field.state.calcs);
 
-const aliasName = config.displayName || df.name || df.refId || ''
-if (!aliases.includes(aliasName)) {
-  aliases.push(aliasName);
-}
-const aliasThresholds = config.custom.thresholds[aliasName];
+    // Start of Data Age implementation
+    if (config.custom.aggregation === 'dataage') {
+      // Extract the last timestamp from the time series data
+      const lastTimestamp = df.fields.find(f => f.name === 'Time')?.values.get(df.length - 1);
+      console.log("Last Timestamp:", lastTimestamp);
+      if (lastTimestamp) {
+        const now = Date.now();
+        const dataAgeInSeconds = (now - lastTimestamp) / 1000;
 
-if (!aliasThresholds) {
-    console.warn(`No thresholds defined for alias: ${aliasName}`);
-    return; // Skip to the next iteration of the loop
-}
-
-switch (aliasThresholds.valueHandler) {
-    case 'Number Threshold':
-        let value: number = field.state.calcs![config.custom.aggregation];
-        const crit = +aliasThresholds.crit; // Access from aliasThresholds
-        const warn = +aliasThresholds.warn; // Access from aliasThresholds
-        if ((warn <= crit && crit <= value) || (warn >= crit && crit >= value)) {
-          fieldStatus = 'crit';
-        } else if ((warn <= value && value <= crit) || (warn >= value && value >= crit)) {
-          fieldStatus = 'warn';
-        }
-        
-
-        if (!_.isFinite(value)) {
-          displayValue = 'Invalid Number';
-        } else if (config.unit) {
-          displayValue = formattedValueToString(toFixedUnit(config.unit)(value, config.decimals));
+        if (dataAgeInSeconds < 60) {
+          displayValue = `${dataAgeInSeconds.toFixed(0)} seconds ago`;
+        } else if (dataAgeInSeconds < 3600) {
+          const minutes = dataAgeInSeconds / 60;
+          displayValue = `${minutes.toFixed(0)} minutes ago`;
+        } else if (dataAgeInSeconds < 86400) { // 3600 seconds * 24 hours
+          const hours = dataAgeInSeconds / 3600;
+          displayValue = `${hours.toFixed(0)} hours ago`;
         } else {
-          displayValue = toFixed(value, config.decimals);
-        }
-        break;
-      case 'String Threshold':
-        displayValue = field.state.calcs![config.custom.aggregation];
-        if (displayValue === undefined || displayValue === null || displayValue !== displayValue) {
-          displayValue = 'Invalid String';
-        }
+          const days = dataAgeInSeconds / 86400;
+          displayValue = `${days.toFixed(0)} days ago`;
 
-        if (displayValue === aliasThresholds.crit) {
-          fieldStatus = 'crit';
-        } else if (displayValue === aliasThresholds.warn) {
-          fieldStatus = 'warn';
-        }
-        break;
-      case 'Date Threshold':
-        const val: string = field.state.calcs![config.custom.aggregation];
-        let date = dateTimeAsMoment(val);
-        if (timeZone === 'utc') {
-          date = date.utc();
-        }
 
-        displayValue = date.format(config.custom.dateFormat);
+          // Use the thresholds for "Data Age" to decide the field status
+          const crit = +aliasThresholds.crit;
+          const warn = +aliasThresholds.warn;
+          console.log("This is the critical value", crit);
+          if (dataAgeInSeconds > crit) {
+            fieldStatus = 'crit';
+          } else if (dataAgeInSeconds > warn) {
+            fieldStatus = 'warn';
+          }
+        }
+      } else {
+        console.warn("Unable to compute data age. Time field missing or empty.");
+      }
+    }
+    // End of Data Age implementation
 
-        if (val === aliasThresholds.crit) {
-          fieldStatus = 'crit';
-        } else if (val === aliasThresholds.warn) {
-          fieldStatus = 'warn';
-        }
-        break;
-      case 'Disable Criteria':
-        if (field.state.calcs![config.custom.aggregation] === config.custom.disabledValue) {
-          fieldStatus = 'disable';
-        }
-        break;
+    if (config.custom.aggregation !== 'dataage') {
+      switch (aliasThresholds.valueHandler) {
+        case 'Number Threshold':
+          let value: number = field.state.calcs![config.custom.aggregation];
+          const crit = +aliasThresholds.crit; // Access from aliasThresholds
+          const warn = +aliasThresholds.warn; // Access from aliasThresholds
+          if ((warn <= crit && crit <= value) || (warn >= crit && crit >= value)) {
+            fieldStatus = 'crit';
+          } else if ((warn <= value && value <= crit) || (warn >= value && value >= crit)) {
+            fieldStatus = 'warn';
+          }
+
+
+          if (!_.isFinite(value)) {
+            displayValue = 'Invalid Number';
+          } else if (config.unit) {
+            displayValue = formattedValueToString(toFixedUnit(config.unit)(value, config.decimals));
+          } else {
+            displayValue = toFixed(value, config.decimals);
+          }
+          break;
+        case 'String Threshold':
+          displayValue = field.state.calcs![config.custom.aggregation];
+          if (displayValue === undefined || displayValue === null || displayValue !== displayValue) {
+            displayValue = 'Invalid String';
+          }
+
+          if (displayValue === aliasThresholds.crit) {
+            fieldStatus = 'crit';
+          } else if (displayValue === aliasThresholds.warn) {
+            fieldStatus = 'warn';
+          }
+          break;
+        case 'Date Threshold':
+          const val: string = field.state.calcs![config.custom.aggregation];
+          let date = dateTimeAsMoment(val);
+          if (timeZone === 'utc') {
+            date = date.utc();
+          }
+
+          displayValue = date.format(config.custom.dateFormat);
+
+          if (val === aliasThresholds.crit) {
+            fieldStatus = 'crit';
+          } else if (val === aliasThresholds.warn) {
+            fieldStatus = 'warn';
+          }
+          break;
+        case 'Disable Criteria':
+          if (field.state.calcs![config.custom.aggregation] === config.custom.disabledValue) {
+            fieldStatus = 'disable';
+          }
+          break;
+      }
     }
     //Hannah's code
     aliasStatuses[aliasName] = fieldStatus;
@@ -153,7 +202,7 @@ switch (aliasThresholds.valueHandler) {
     if (isDisplayValue && config.custom.valueDisplayRegex) {
       try {
         displayValue = displayValue.replace(new RegExp(config.custom.valueDisplayRegex), '');
-      } catch {}
+      } catch { }
     }
 
     // get first link and interpolate variables
@@ -203,11 +252,11 @@ switch (aliasThresholds.valueHandler) {
 
   //Hannah's code
   let panelStatus: StatusType = 'ok';
-if (Object.values(aliasStatuses).includes('crit')) {
+  if (Object.values(aliasStatuses).includes('crit')) {
     panelStatus = 'crit';
-} else if (Object.values(aliasStatuses).includes('warn')) {
+  } else if (Object.values(aliasStatuses).includes('warn')) {
     panelStatus = 'warn';
-}
+  }
 
-  return { annotations, disables, crits, warns, displays, panelStatus};
+  return { annotations, disables, crits, warns, displays, panelStatus };
 }
