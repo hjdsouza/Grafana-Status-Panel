@@ -83,7 +83,7 @@ export const statusFieldOptionsBuilder = (builder: FieldConfigEditorBuilder<Stat
       path: 'thresholds',
       id: 'thresholds',
       name: 'Threshold Type',
-      defaultValue: { valueHandler: 'Number Threshold', warn: 70, crit: 90 },
+      // defaultValue: { valueHandler: 'Number Threshold', warn: 70, crit: 90 },
       description: 'The type of data to show to the panel.',
       editor: StatusThresholdOptionsEditor,
       override: StatusThresholdOptionsEditor,

@@ -1454,11 +1454,7 @@ var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder) {
     path: 'thresholds',
     id: 'thresholds',
     name: 'Threshold Type',
-    defaultValue: {
-      valueHandler: 'Number Threshold',
-      warn: 70,
-      crit: 90
-    },
+    // defaultValue: { valueHandler: 'Number Threshold', warn: 70, crit: 90 },
     description: 'The type of data to show to the panel.',
     editor: components_StatusThresholdOptionsEditor__WEBPACK_IMPORTED_MODULE_0__["StatusThresholdOptionsEditor"],
     override: components_StatusThresholdOptionsEditor__WEBPACK_IMPORTED_MODULE_0__["StatusThresholdOptionsEditor"],
