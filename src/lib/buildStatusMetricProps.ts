@@ -60,11 +60,11 @@ export function buildStatusMetricProps(
       return; // Skip to the next iteration of the loop
     }
 
-    if (!field.state.calcs) {
-      console.warn("Unexpected data structure: field.state.calcs is not defined.");
-      console.warn("Unexpected data structure for field:", field);
-      return; // Skip to the next iteration of the loop
-    }
+    // if (!field.state.calcs) {
+    //   console.warn("Unexpected data structure: field.state.calcs is not defined.");
+    //   console.warn("Unexpected data structure for field:", field);
+    //   return; // Skip to the next iteration of the loop
+    // }
 
     // console.log(field.state.calcs);
 

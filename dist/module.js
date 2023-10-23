@@ -1187,12 +1187,11 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       console.warn("Unexpected data structure: field.state is not defined.");
       return; // Skip to the next iteration of the loop
     }
-
-    if (!field.state.calcs) {
-      console.warn("Unexpected data structure: field.state.calcs is not defined.");
-      console.warn("Unexpected data structure for field:", field);
-      return; // Skip to the next iteration of the loop
-    }
+    // if (!field.state.calcs) {
+    //   console.warn("Unexpected data structure: field.state.calcs is not defined.");
+    //   console.warn("Unexpected data structure for field:", field);
+    //   return; // Skip to the next iteration of the loop
+    // }
     // console.log(field.state.calcs);
     // Check for the existence of the dynamic property on field.state.calcs
     // if (!(config.custom.aggregation in field.state.calcs)) {
