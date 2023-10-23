@@ -123,18 +123,18 @@ export function buildStatusMetricProps(
 
 
         }
-                  // Use the thresholds for "Data Age" to decide the field status
-                  const crit = +aliasThresholds.crit;
-                  const warn = +aliasThresholds.warn;
-                  console.log("Critical Threshold:", crit);
-                  console.log("Warning Threshold:", warn);
-                  console.log("This is the critical value", crit);
-                  if (dataAgeInSeconds > crit) {
-                    fieldStatus = 'crit';
-                    console.log(`Alias: ${aliasName}, Data Age: ${dataAgeInSeconds} seconds, Status: Critical`);
-                  } else if (dataAgeInSeconds > warn) {
-                    fieldStatus = 'warn';
-                    console.log(`Alias: ${aliasName}, Data Age: ${dataAgeInSeconds} seconds, Status: Warning`);
+      // Use the thresholds for "Data Age" to decide the field status
+      const crit = +aliasThresholds.crit;
+      const warn = +aliasThresholds.warn;
+      console.log("Critical Threshold:", crit);
+      console.log("Warning Threshold:", warn);
+      console.log("This is the critical value", crit);
+      if (dataAgeInSeconds / 60 > crit) {
+        fieldStatus = 'crit';
+        console.log(`Alias: ${aliasName}, Data Age: ${dataAgeInSeconds} seconds, Status: Critical`);
+        } else if (dataAgeInSeconds / 60 > warn) {
+          fieldStatus = 'warn';
+          console.log(`Alias: ${aliasName}, Data Age: ${dataAgeInSeconds} seconds, Status: Warning`);
                   }
       } else {
         console.warn("Unable to compute data age. Time field missing or empty.");

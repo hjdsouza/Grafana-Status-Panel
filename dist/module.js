@@ -1243,10 +1243,10 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
         console.log("Critical Threshold:", crit);
         console.log("Warning Threshold:", warn);
         console.log("This is the critical value", crit);
-        if (dataAgeInSeconds > crit) {
+        if (dataAgeInSeconds / 60 > crit) {
           fieldStatus = 'crit';
           console.log("Alias: " + aliasName + ", Data Age: " + dataAgeInSeconds + " seconds, Status: Critical");
-        } else if (dataAgeInSeconds > warn) {
+        } else if (dataAgeInSeconds / 60 > warn) {
           fieldStatus = 'warn';
           console.log("Alias: " + aliasName + ", Data Age: " + dataAgeInSeconds + " seconds, Status: Warning");
         }
