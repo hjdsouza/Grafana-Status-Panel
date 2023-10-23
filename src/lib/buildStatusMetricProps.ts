@@ -66,7 +66,7 @@ export function buildStatusMetricProps(
       return; // Skip to the next iteration of the loop
     }
 
-    console.log(field.state.calcs);
+    // console.log(field.state.calcs);
 
     // Check for the existence of the dynamic property on field.state.calcs
     // if (!(config.custom.aggregation in field.state.calcs)) {
@@ -92,7 +92,7 @@ export function buildStatusMetricProps(
       return; // Skip to the next iteration of the loop
     }
 
-    console.log("Available calcs:", field.state.calcs);
+    // console.log("Available calcs:", field.state.calcs);
 
     /*
 
@@ -102,13 +102,13 @@ export function buildStatusMetricProps(
 
     if (config.custom.aggregation === 'dataage') {
       // Extract the last timestamp from the time series data
-      console.log("Data Frame:",df);
+      // console.log("Data Frame:",df);
       const lastTimestamp = df.fields.find(f => f.name === 'Time')?.values.get(0);
-      console.log("Last Timestamp:", lastTimestamp);
+      // console.log("Last Timestamp:", lastTimestamp);
       if (lastTimestamp) {
         const now = Date.now();
         const dataAgeInSeconds = (now - lastTimestamp) / 1000;
-
+        console.log("Data Age in Seconds:", dataAgeInSeconds);
         if (dataAgeInSeconds < 60) {
           displayValue = `${dataAgeInSeconds.toFixed(0)} seconds ago`;
         } else if (dataAgeInSeconds < 3600) {
@@ -122,18 +122,20 @@ export function buildStatusMetricProps(
           displayValue = `${days.toFixed(0)} days ago`;
 
 
-          // Use the thresholds for "Data Age" to decide the field status
-          const crit = +aliasThresholds.crit;
-          const warn = +aliasThresholds.warn;
-          console.log("This is the critical value", crit);
-          if (dataAgeInSeconds > crit) {
-            fieldStatus = 'crit';
-            console.log(`Alias: ${aliasName}, Data Age: ${dataAgeInSeconds} seconds, Status: Critical`);
-          } else if (dataAgeInSeconds > warn) {
-            fieldStatus = 'warn';
-            console.log(`Alias: ${aliasName}, Data Age: ${dataAgeInSeconds} seconds, Status: Warning`);
-          }
         }
+                  // Use the thresholds for "Data Age" to decide the field status
+                  const crit = +aliasThresholds.crit;
+                  const warn = +aliasThresholds.warn;
+                  console.log("Critical Threshold:", crit);
+                  console.log("Warning Threshold:", warn);
+                  console.log("This is the critical value", crit);
+                  if (dataAgeInSeconds > crit) {
+                    fieldStatus = 'crit';
+                    console.log(`Alias: ${aliasName}, Data Age: ${dataAgeInSeconds} seconds, Status: Critical`);
+                  } else if (dataAgeInSeconds > warn) {
+                    fieldStatus = 'warn';
+                    console.log(`Alias: ${aliasName}, Data Age: ${dataAgeInSeconds} seconds, Status: Warning`);
+                  }
       } else {
         console.warn("Unable to compute data age. Time field missing or empty.");
       }
@@ -229,7 +231,7 @@ export function buildStatusMetricProps(
     };
 
     //print the alias name 
-    console.log("Alias:", props.alias);
+    // console.log("Alias:", props.alias);
 
     // set font format for field
     if (fieldStatus !== 'ok') {

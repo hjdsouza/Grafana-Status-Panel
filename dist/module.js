@@ -1193,8 +1193,7 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       console.warn("Unexpected data structure for field:", field);
       return; // Skip to the next iteration of the loop
     }
-
-    console.log(field.state.calcs);
+    // console.log(field.state.calcs);
     // Check for the existence of the dynamic property on field.state.calcs
     // if (!(config.custom.aggregation in field.state.calcs)) {
     //   console.warn(`Unexpected data structure: field.state.calcs.${config.custom.aggregation} is not defined.`);
@@ -1210,21 +1209,21 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       console.warn("No thresholds defined for alias: " + aliasName);
       return; // Skip to the next iteration of the loop
     }
-
-    console.log("Available calcs:", field.state.calcs);
+    // console.log("Available calcs:", field.state.calcs);
     /*
           START OF DATA AGE
           */
     if (config.custom.aggregation === 'dataage') {
       // Extract the last timestamp from the time series data
-      console.log("Data Frame:", df);
+      // console.log("Data Frame:",df);
       var lastTimestamp = (_b = df.fields.find(function (f) {
         return f.name === 'Time';
       })) === null || _b === void 0 ? void 0 : _b.values.get(0);
-      console.log("Last Timestamp:", lastTimestamp);
+      // console.log("Last Timestamp:", lastTimestamp);
       if (lastTimestamp) {
         var now = Date.now();
         var dataAgeInSeconds = (now - lastTimestamp) / 1000;
+        console.log("Data Age in Seconds:", dataAgeInSeconds);
         if (dataAgeInSeconds < 60) {
           displayValue = dataAgeInSeconds.toFixed(0) + " seconds ago";
         } else if (dataAgeInSeconds < 3600) {
@@ -1237,17 +1236,19 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
         } else {
           var days = dataAgeInSeconds / 86400;
           displayValue = days.toFixed(0) + " days ago";
-          // Use the thresholds for "Data Age" to decide the field status
-          var crit = +aliasThresholds.crit;
-          var warn = +aliasThresholds.warn;
-          console.log("This is the critical value", crit);
-          if (dataAgeInSeconds > crit) {
-            fieldStatus = 'crit';
-            console.log("Alias: " + aliasName + ", Data Age: " + dataAgeInSeconds + " seconds, Status: Critical");
-          } else if (dataAgeInSeconds > warn) {
-            fieldStatus = 'warn';
-            console.log("Alias: " + aliasName + ", Data Age: " + dataAgeInSeconds + " seconds, Status: Warning");
-          }
+        }
+        // Use the thresholds for "Data Age" to decide the field status
+        var crit = +aliasThresholds.crit;
+        var warn = +aliasThresholds.warn;
+        console.log("Critical Threshold:", crit);
+        console.log("Warning Threshold:", warn);
+        console.log("This is the critical value", crit);
+        if (dataAgeInSeconds > crit) {
+          fieldStatus = 'crit';
+          console.log("Alias: " + aliasName + ", Data Age: " + dataAgeInSeconds + " seconds, Status: Critical");
+        } else if (dataAgeInSeconds > warn) {
+          fieldStatus = 'warn';
+          console.log("Alias: " + aliasName + ", Data Age: " + dataAgeInSeconds + " seconds, Status: Warning");
         }
       } else {
         console.warn("Unable to compute data age. Time field missing or empty.");
@@ -1327,7 +1328,7 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       link: link
     };
     //print the alias name 
-    console.log("Alias:", props.alias);
+    // console.log("Alias:", props.alias);
     // set font format for field
     if (fieldStatus !== 'ok') {
       if (config.custom.fontFormat === 'Bold') {
