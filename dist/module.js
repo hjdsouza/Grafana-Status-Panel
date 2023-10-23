@@ -1212,12 +1212,15 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
     }
 
     console.log("Available calcs:", field.state.calcs);
-    // Start of Data Age implementation
+    /*
+          START OF DATA AGE
+          */
     if (config.custom.aggregation === 'dataage') {
       // Extract the last timestamp from the time series data
+      console.log("Data Frame:", df);
       var lastTimestamp = (_b = df.fields.find(function (f) {
         return f.name === 'Time';
-      })) === null || _b === void 0 ? void 0 : _b.values.get(df.length - 1);
+      })) === null || _b === void 0 ? void 0 : _b.values.get(0);
       console.log("Last Timestamp:", lastTimestamp);
       if (lastTimestamp) {
         var now = Date.now();
@@ -1237,10 +1240,13 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
           // Use the thresholds for "Data Age" to decide the field status
           var crit = +aliasThresholds.crit;
           var warn = +aliasThresholds.warn;
+          console.log("This is the critical value", crit);
           if (dataAgeInSeconds > crit) {
             fieldStatus = 'crit';
+            console.log("Alias: " + aliasName + ", Data Age: " + dataAgeInSeconds + " seconds, Status: Critical");
           } else if (dataAgeInSeconds > warn) {
             fieldStatus = 'warn';
+            console.log("Alias: " + aliasName + ", Data Age: " + dataAgeInSeconds + " seconds, Status: Warning");
           }
         }
       } else {

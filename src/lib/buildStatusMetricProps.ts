@@ -94,10 +94,16 @@ export function buildStatusMetricProps(
 
     console.log("Available calcs:", field.state.calcs);
 
-    // Start of Data Age implementation
+    /*
+
+    START OF DATA AGE
+
+    */
+
     if (config.custom.aggregation === 'dataage') {
       // Extract the last timestamp from the time series data
-      const lastTimestamp = df.fields.find(f => f.name === 'Time')?.values.get(df.length - 1);
+      console.log("Data Frame:",df);
+      const lastTimestamp = df.fields.find(f => f.name === 'Time')?.values.get(0);
       console.log("Last Timestamp:", lastTimestamp);
       if (lastTimestamp) {
         const now = Date.now();
@@ -122,13 +128,17 @@ export function buildStatusMetricProps(
           console.log("This is the critical value", crit);
           if (dataAgeInSeconds > crit) {
             fieldStatus = 'crit';
+            console.log(`Alias: ${aliasName}, Data Age: ${dataAgeInSeconds} seconds, Status: Critical`);
           } else if (dataAgeInSeconds > warn) {
             fieldStatus = 'warn';
+            console.log(`Alias: ${aliasName}, Data Age: ${dataAgeInSeconds} seconds, Status: Warning`);
           }
         }
       } else {
         console.warn("Unable to compute data age. Time field missing or empty.");
       }
+
+      
     }
     // End of Data Age implementation
 
