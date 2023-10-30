@@ -50,6 +50,8 @@ export function buildStatusMetricProps(
     return [nonNullValue, aliasName];
   }
 
+  const processedAlias = new Set(); //to keep track of processed alias names
+
   data.series.forEach(df => {
     df.fields.forEach(field => {
       if (field.name === 'Time') {
@@ -70,9 +72,11 @@ export function buildStatusMetricProps(
       const [value, aliasName] = extractLastValueAndAlias(df, field);
     
       // If value is null, skip to the next field
-      if (value === null) {
+      if (value === null || processedAlias.has(aliasName)) {
         return;
       }
+      // Mark this alias as processed
+      processedAlias.add(aliasName);
 
       // determine field status & handle formatting based on value handler
       let fieldStatus: StatusType = config.custom.displayAliasType === 'Always' ? 'ok' : 'hide';

@@ -1179,6 +1179,7 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
     }
     return [nonNullValue, aliasName];
   }
+  var processedAlias = new Set(); //to keep track of processed alias names
   data.series.forEach(function (df) {
     df.fields.forEach(function (field) {
       var _a, _b;
@@ -1199,9 +1200,11 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
         value = _c[0],
         aliasName = _c[1];
       // If value is null, skip to the next field
-      if (value === null) {
+      if (value === null || processedAlias.has(aliasName)) {
         return;
       }
+      // Mark this alias as processed
+      processedAlias.add(aliasName);
       // determine field status & handle formatting based on value handler
       var fieldStatus = config.custom.displayAliasType === 'Always' ? 'ok' : 'hide';
       var displayValue = '';
