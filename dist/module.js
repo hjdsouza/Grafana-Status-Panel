@@ -1167,197 +1167,207 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
   var crits = [];
   var warns = [];
   var disables = [];
-  data.series.forEach(function (df) {
-    var _a, _b, _c;
-    // find first non-time column
-    var field = df.fields.find(function (field) {
-      return field.name !== 'Time';
+  function extractLastValueAndAlias(frame, field) {
+    var _a;
+    var aliasName = frame.name || ((_a = field.config.custom) === null || _a === void 0 ? void 0 : _a.aliasName) || field.name;
+    var nonNullValue = field.values.toArray().find(function (v) {
+      return v !== null && v !== undefined;
     });
-    if (!((_a = field) === null || _a === void 0 ? void 0 : _a.state)) {
-      return;
+    if (nonNullValue === undefined) {
+      console.log("No non-null data for alias: " + aliasName);
+      return [null, aliasName];
     }
-    var config = lodash__WEBPACK_IMPORTED_MODULE_3___default.a.defaultsDeep(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, field.config), fieldConfig.defaults);
-    if (!config.custom) {
-      return;
-    }
-    // determine field status & handle formatting based on value handler
-    var fieldStatus = config.custom.displayAliasType === 'Always' ? 'ok' : 'hide';
-    var displayValue = '';
-    if (!field.state) {
-      console.warn("Unexpected data structure: field.state is not defined.");
-      return; // Skip to the next iteration of the loop
-    }
-    // if (!field.state.calcs) {
-    //   console.warn("Unexpected data structure: field.state.calcs is not defined.");
-    //   console.warn("Unexpected data structure for field:", field);
-    //   return; // Skip to the next iteration of the loop
-    // }
-    // console.log(field.state.calcs);
-    // Check for the existence of the dynamic property on field.state.calcs
-    // if (!(config.custom.aggregation in field.state.calcs)) {
-    //   console.warn(`Unexpected data structure: field.state.calcs.${config.custom.aggregation} is not defined.`);
-    //   return; // Skip to the next iteration of the loop
-    //     }
-    // Hannah's code
-    var aliasName = config.displayName || df.name || df.refId || '';
-    if (!aliases.includes(aliasName)) {
-      aliases.push(aliasName);
-    }
-    var aliasThresholds = config.custom.thresholds[aliasName];
-    if (!aliasThresholds) {
-      console.warn("No thresholds defined for alias: " + aliasName);
-      return; // Skip to the next iteration of the loop
-    }
-    // console.log("Available calcs:", field.state.calcs);
-    /*
-          START OF DATA AGE
-          */
-    if (config.custom.aggregation === 'dataage') {
-      // Extract the last timestamp from the time series data
-      // console.log("Data Frame:",df);
-      var lastTimestamp = (_b = df.fields.find(function (f) {
-        return f.name === 'Time';
-      })) === null || _b === void 0 ? void 0 : _b.values.get(0);
-      // console.log("Last Timestamp:", lastTimestamp);
-      if (lastTimestamp) {
-        var now = Date.now();
-        var dataAgeInSeconds = (now - lastTimestamp) / 1000;
-        console.log("Data Age in Seconds:", dataAgeInSeconds);
-        if (dataAgeInSeconds < 60) {
-          displayValue = dataAgeInSeconds.toFixed(0) + " seconds ago";
-        } else if (dataAgeInSeconds < 3600) {
-          var minutes = dataAgeInSeconds / 60;
-          displayValue = minutes.toFixed(0) + " minutes ago";
-        } else if (dataAgeInSeconds < 86400) {
-          // 3600 seconds * 24 hours
-          var hours = dataAgeInSeconds / 3600;
-          displayValue = hours.toFixed(0) + " hours ago";
-        } else {
-          var days = dataAgeInSeconds / 86400;
-          displayValue = days.toFixed(0) + " days ago";
-        }
-        // Use the thresholds for "Data Age" to decide the field status
-        var crit = +aliasThresholds.crit;
-        var warn = +aliasThresholds.warn;
-        console.log("Critical Threshold:", crit);
-        console.log("Warning Threshold:", warn);
-        console.log("This is the critical value", crit);
-        if (dataAgeInSeconds / 60 > crit) {
-          fieldStatus = 'crit';
-          console.log("Alias: " + aliasName + ", Data Age: " + dataAgeInSeconds + " seconds, Status: Critical");
-        } else if (dataAgeInSeconds / 60 > warn) {
-          fieldStatus = 'warn';
-          console.log("Alias: " + aliasName + ", Data Age: " + dataAgeInSeconds + " seconds, Status: Warning");
-        }
-      } else {
-        console.warn("Unable to compute data age. Time field missing or empty.");
+    return [nonNullValue, aliasName];
+  }
+  data.series.forEach(function (df) {
+    df.fields.forEach(function (field) {
+      var _a, _b;
+      if (field.name === 'Time') {
+        return; // Skip time fields
       }
-    }
-    // End of Data Age implementation
-    if (config.custom.aggregation !== 'dataage') {
-      switch (aliasThresholds.valueHandler) {
-        case 'Number Threshold':
-          var value = field.state.calcs[config.custom.aggregation];
-          var crit = +aliasThresholds.crit; // Access from aliasThresholds
-          var warn = +aliasThresholds.warn; // Access from aliasThresholds
-          if (warn <= crit && crit <= value || warn >= crit && crit >= value) {
-            fieldStatus = 'crit';
-          } else if (warn <= value && value <= crit || warn >= value && value >= crit) {
-            fieldStatus = 'warn';
-          }
-          if (!lodash__WEBPACK_IMPORTED_MODULE_3___default.a.isFinite(value)) {
-            displayValue = 'Invalid Number';
-          } else if (config.unit) {
-            displayValue = Object(_grafana_data__WEBPACK_IMPORTED_MODULE_1__["formattedValueToString"])(Object(_grafana_data__WEBPACK_IMPORTED_MODULE_1__["toFixedUnit"])(config.unit)(value, config.decimals));
+
+      if (!field.state) {
+        console.warn("Unexpected data structure: field.state is not defined.");
+        return;
+      }
+      var config = lodash__WEBPACK_IMPORTED_MODULE_3___default.a.defaultsDeep(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, field.config), fieldConfig.defaults);
+      if (!config.custom) {
+        return;
+      }
+      // Extract the first non-null value and the alias
+      var _c = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(extractLastValueAndAlias(df, field), 2),
+        value = _c[0],
+        aliasName = _c[1];
+      // If value is null, skip to the next field
+      if (value === null) {
+        return;
+      }
+      // determine field status & handle formatting based on value handler
+      var fieldStatus = config.custom.displayAliasType === 'Always' ? 'ok' : 'hide';
+      var displayValue = '';
+      // Hannah's code
+      // const aliasName = config.displayName || df.name || df.refId || ''
+      if (!aliases.includes(aliasName)) {
+        aliases.push(aliasName);
+      }
+      var aliasThresholds = config.custom.thresholds[aliasName];
+      if (!aliasThresholds) {
+        console.warn("No thresholds defined for alias: " + aliasName);
+        return; // Skip to the next iteration of the loop
+      }
+      // console.log("Available calcs:", field.state.calcs);
+      /*
+                START OF DATA AGE
+                */
+      if (config.custom.aggregation === 'dataage') {
+        // Extract the last timestamp from the time series data
+        // console.log("Data Frame:",df);
+        var lastTimestamp = (_a = df.fields.find(function (f) {
+          return f.name === 'Time';
+        })) === null || _a === void 0 ? void 0 : _a.values.get(0);
+        // console.log("Last Timestamp:", lastTimestamp);
+        if (lastTimestamp) {
+          var now = Date.now();
+          var dataAgeInSeconds = (now - lastTimestamp) / 1000;
+          console.log("Data Age in Seconds:", dataAgeInSeconds);
+          if (dataAgeInSeconds < 60) {
+            displayValue = dataAgeInSeconds.toFixed(0) + " seconds ago";
+          } else if (dataAgeInSeconds < 3600) {
+            var minutes = dataAgeInSeconds / 60;
+            displayValue = minutes.toFixed(0) + " minutes ago";
+          } else if (dataAgeInSeconds < 86400) {
+            // 3600 seconds * 24 hours
+            var hours = dataAgeInSeconds / 3600;
+            displayValue = hours.toFixed(0) + " hours ago";
           } else {
-            displayValue = Object(_grafana_data__WEBPACK_IMPORTED_MODULE_1__["toFixed"])(value, config.decimals);
+            var days = dataAgeInSeconds / 86400;
+            displayValue = days.toFixed(0) + " days ago";
           }
-          break;
-        case 'String Threshold':
-          displayValue = field.state.calcs[config.custom.aggregation];
-          if (displayValue === undefined || displayValue === null || displayValue !== displayValue) {
-            displayValue = 'Invalid String';
-          }
-          if (displayValue === aliasThresholds.crit) {
+          // Use the thresholds for "Data Age" to decide the field status
+          var crit = +aliasThresholds.crit;
+          var warn = +aliasThresholds.warn;
+          console.log("Critical Threshold:", crit);
+          console.log("Warning Threshold:", warn);
+          console.log("This is the critical value", crit);
+          if (dataAgeInSeconds / 60 > crit) {
             fieldStatus = 'crit';
-          } else if (displayValue === aliasThresholds.warn) {
+            console.log("Alias: " + aliasName + ", Data Age: " + dataAgeInSeconds + " seconds, Status: Critical");
+          } else if (dataAgeInSeconds / 60 > warn) {
             fieldStatus = 'warn';
+            console.log("Alias: " + aliasName + ", Data Age: " + dataAgeInSeconds + " seconds, Status: Warning");
           }
-          break;
-        case 'Date Threshold':
-          var val = field.state.calcs[config.custom.aggregation];
-          var date = Object(_grafana_data__WEBPACK_IMPORTED_MODULE_1__["dateTimeAsMoment"])(val);
-          if (timeZone === 'utc') {
-            date = date.utc();
-          }
-          displayValue = date.format(config.custom.dateFormat);
-          if (val === aliasThresholds.crit) {
-            fieldStatus = 'crit';
-          } else if (val === aliasThresholds.warn) {
-            fieldStatus = 'warn';
-          }
-          break;
-        case 'Disable Criteria':
-          if (field.state.calcs[config.custom.aggregation] === config.custom.disabledValue) {
-            fieldStatus = 'disable';
-          }
-          break;
+        } else {
+          console.warn("Unable to compute data age. Time field missing or empty.");
+        }
       }
-    }
-    //Hannah's code
-    aliasStatuses[aliasName] = fieldStatus;
-    // only display value when appropriate
-    var withAlias = config.custom.displayValueWithAlias;
-    var isDisplayValue = withAlias === 'When Alias Displayed' || fieldStatus === 'warn' && withAlias === 'Warning / Critical' || fieldStatus === 'crit' && (withAlias === 'Warning / Critical' || withAlias === 'Critical Only');
-    // apply RegEx if value will be displayed
-    if (isDisplayValue && config.custom.valueDisplayRegex) {
-      try {
-        displayValue = displayValue.replace(new RegExp(config.custom.valueDisplayRegex), '');
-      } catch (_d) {}
-    }
-    // get first link and interpolate variables
-    var link = (_c = field.getLinks && field.getLinks({}), _c !== null && _c !== void 0 ? _c : [])[0];
-    if (link) {
-      link.href = replaceVariables(link.href);
-    }
-    // build props and place in correct bucket
-    var props = {
-      alias: config.displayName || df.name || df.refId || '',
-      displayValue: isDisplayValue ? displayValue : undefined,
-      link: link
-    };
-    //print the alias name 
-    // console.log("Alias:", props.alias);
-    // set font format for field
-    if (fieldStatus !== 'ok') {
-      if (config.custom.fontFormat === 'Bold') {
-        props.className = Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
-          fontWeight: 'bold'
-        });
-      } else if (config.custom.fontFormat === 'Italic') {
-        props.className = Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
-          fontStyle: 'italic'
-        });
+      // End of Data Age implementation
+      if (config.custom.aggregation !== 'dataage') {
+        switch (aliasThresholds.valueHandler) {
+          case 'Number Threshold':
+            // let value: number = field.state.calcs![config.custom.aggregation];
+            var crit = +aliasThresholds.crit; // Access from aliasThresholds
+            var warn = +aliasThresholds.warn; // Access from aliasThresholds
+            if (warn <= crit && crit <= value || warn >= crit && crit >= value) {
+              fieldStatus = 'crit';
+            } else if (warn <= value && value <= crit || warn >= value && value >= crit) {
+              fieldStatus = 'warn';
+            }
+            if (!lodash__WEBPACK_IMPORTED_MODULE_3___default.a.isFinite(value)) {
+              displayValue = 'Invalid Number';
+            } else if (config.unit) {
+              displayValue = Object(_grafana_data__WEBPACK_IMPORTED_MODULE_1__["formattedValueToString"])(Object(_grafana_data__WEBPACK_IMPORTED_MODULE_1__["toFixedUnit"])(config.unit)(value, config.decimals));
+            } else {
+              displayValue = Object(_grafana_data__WEBPACK_IMPORTED_MODULE_1__["toFixed"])(value, config.decimals);
+            }
+            break;
+          case 'String Threshold':
+            // displayValue = field.state.calcs![config.custom.aggregation];
+            displayValue = value.toString();
+            if (displayValue === undefined || displayValue === null || displayValue !== displayValue) {
+              displayValue = 'Invalid String';
+            }
+            if (displayValue === aliasThresholds.crit) {
+              fieldStatus = 'crit';
+            } else if (displayValue === aliasThresholds.warn) {
+              fieldStatus = 'warn';
+            }
+            break;
+          case 'Date Threshold':
+            var val = field.state.calcs[config.custom.aggregation];
+            var date = Object(_grafana_data__WEBPACK_IMPORTED_MODULE_1__["dateTimeAsMoment"])(val);
+            if (timeZone === 'utc') {
+              date = date.utc();
+            }
+            displayValue = date.format(config.custom.dateFormat);
+            if (val === aliasThresholds.crit) {
+              fieldStatus = 'crit';
+            } else if (val === aliasThresholds.warn) {
+              fieldStatus = 'warn';
+            }
+            break;
+          case 'Disable Criteria':
+            if (field.state.calcs[config.custom.aggregation] === config.custom.disabledValue) {
+              fieldStatus = 'disable';
+            }
+            break;
+        }
       }
-    }
-    // set color for field when colormode is Metric
-    if (options.colorMode === 'Metric') {
-      props.className = Object(emotion__WEBPACK_IMPORTED_MODULE_2__["cx"])(props.className, colorClasses[fieldStatus]);
-    }
-    // add to appropriate section
-    if (fieldStatus === 'ok') {
-      if (config.custom.displayType === 'Regular') {
-        displays.push(props);
-      } else {
-        annotations.push(props);
+      //Hannah's code
+      aliasStatuses[aliasName] = fieldStatus;
+      // only display value when appropriate
+      var withAlias = config.custom.displayValueWithAlias;
+      var isDisplayValue = withAlias === 'When Alias Displayed' || fieldStatus === 'warn' && withAlias === 'Warning / Critical' || fieldStatus === 'crit' && (withAlias === 'Warning / Critical' || withAlias === 'Critical Only');
+      // apply RegEx if value will be displayed
+      if (isDisplayValue && config.custom.valueDisplayRegex) {
+        try {
+          displayValue = displayValue.replace(new RegExp(config.custom.valueDisplayRegex), '');
+        } catch (_d) {}
       }
-    } else if (fieldStatus === 'warn') {
-      warns.push(props);
-    } else if (fieldStatus === 'crit') {
-      crits.push(props);
-    } else if (fieldStatus === 'disable') {
-      disables.push(props);
-    }
+      // get first link and interpolate variables
+      var link = (_b = field.getLinks && field.getLinks({}), _b !== null && _b !== void 0 ? _b : [])[0];
+      if (link) {
+        link.href = replaceVariables(link.href);
+      }
+      // build props and place in correct bucket
+      var props = {
+        // alias: config.displayName || df.name || df.refId || '',
+        alias: aliasName,
+        displayValue: isDisplayValue ? displayValue : undefined,
+        link: link
+      };
+      //print the alias name 
+      // console.log("Alias:", props.alias);
+      // set font format for field
+      if (fieldStatus !== 'ok') {
+        if (config.custom.fontFormat === 'Bold') {
+          props.className = Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
+            fontWeight: 'bold'
+          });
+        } else if (config.custom.fontFormat === 'Italic') {
+          props.className = Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
+            fontStyle: 'italic'
+          });
+        }
+      }
+      // set color for field when colormode is Metric
+      if (options.colorMode === 'Metric') {
+        props.className = Object(emotion__WEBPACK_IMPORTED_MODULE_2__["cx"])(props.className, colorClasses[fieldStatus]);
+      }
+      // add to appropriate section
+      if (fieldStatus === 'ok') {
+        if (config.custom.displayType === 'Regular') {
+          displays.push(props);
+        } else {
+          annotations.push(props);
+        }
+      } else if (fieldStatus === 'warn') {
+        warns.push(props);
+      } else if (fieldStatus === 'crit') {
+        crits.push(props);
+      } else if (fieldStatus === 'disable') {
+        disables.push(props);
+      }
+    });
   });
   //Hannah's code
   var panelStatus = 'ok';

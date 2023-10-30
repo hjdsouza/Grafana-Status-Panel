@@ -40,48 +40,47 @@ export function buildStatusMetricProps(
   let warns: StatusMetricProp[] = [];
   let disables: StatusMetricProp[] = [];
 
+  function extractLastValueAndAlias(frame: any, field: any): [any, string] {
+    const aliasName = frame.name || field.config.custom?.aliasName || field.name;
+    const nonNullValue = field.values.toArray().find((v: any) => v !== null && v !== undefined);
+    if (nonNullValue === undefined) {
+      console.log(`No non-null data for alias: ${aliasName}`);
+      return [null, aliasName];
+    }
+    return [nonNullValue, aliasName];
+  }
+
   data.series.forEach(df => {
-    // find first non-time column
-    const field = df.fields.find(field => field.name !== 'Time')!;
-    if (!field?.state) {
-      return;
-    }
+    df.fields.forEach(field => {
+      if (field.name === 'Time') {
+        return; // Skip time fields
+      }
+  
+      if (!field.state) {
+        console.warn("Unexpected data structure: field.state is not defined.");
+        return;
+      }
+  
+      const config: FieldConfig<StatusFieldOptions> = _.defaultsDeep({ ...field.config }, fieldConfig.defaults);
+      if (!config.custom) {
+        return;
+      }  
 
-    const config: FieldConfig<StatusFieldOptions> = _.defaultsDeep({ ...field.config }, fieldConfig.defaults);
-    if (!config.custom) {
-      return;
-    }
+      // Extract the first non-null value and the alias
+      const [value, aliasName] = extractLastValueAndAlias(df, field);
+    
+      // If value is null, skip to the next field
+      if (value === null) {
+        return;
+      }
 
-    // determine field status & handle formatting based on value handler
-    let fieldStatus: StatusType = config.custom.displayAliasType === 'Always' ? 'ok' : 'hide';
-    let displayValue = '';
-    if (!field.state) {
-      console.warn("Unexpected data structure: field.state is not defined.");
-      return; // Skip to the next iteration of the loop
-    }
-
-    // if (!field.state.calcs) {
-    //   console.warn("Unexpected data structure: field.state.calcs is not defined.");
-    //   console.warn("Unexpected data structure for field:", field);
-    //   return; // Skip to the next iteration of the loop
-    // }
-
-    // console.log(field.state.calcs);
-
-    // Check for the existence of the dynamic property on field.state.calcs
-    // if (!(config.custom.aggregation in field.state.calcs)) {
-    //   console.warn(`Unexpected data structure: field.state.calcs.${config.custom.aggregation} is not defined.`);
-    //   return; // Skip to the next iteration of the loop
-    //     }
-
-
-
-
-
+      // determine field status & handle formatting based on value handler
+      let fieldStatus: StatusType = config.custom.displayAliasType === 'Always' ? 'ok' : 'hide';
+      let displayValue = '';
 
     // Hannah's code
 
-    const aliasName = config.displayName || df.name || df.refId || ''
+    // const aliasName = config.displayName || df.name || df.refId || ''
     if (!aliases.includes(aliasName)) {
       aliases.push(aliasName);
     }
@@ -147,7 +146,7 @@ export function buildStatusMetricProps(
     if (config.custom.aggregation !== 'dataage') {
       switch (aliasThresholds.valueHandler) {
         case 'Number Threshold':
-          let value: number = field.state.calcs![config.custom.aggregation];
+          // let value: number = field.state.calcs![config.custom.aggregation];
           const crit = +aliasThresholds.crit; // Access from aliasThresholds
           const warn = +aliasThresholds.warn; // Access from aliasThresholds
           if ((warn <= crit && crit <= value) || (warn >= crit && crit >= value)) {
@@ -166,7 +165,8 @@ export function buildStatusMetricProps(
           }
           break;
         case 'String Threshold':
-          displayValue = field.state.calcs![config.custom.aggregation];
+          // displayValue = field.state.calcs![config.custom.aggregation];
+          displayValue = value.toString();
           if (displayValue === undefined || displayValue === null || displayValue !== displayValue) {
             displayValue = 'Invalid String';
           }
@@ -225,7 +225,8 @@ export function buildStatusMetricProps(
 
     // build props and place in correct bucket
     let props: StatusMetricProp = {
-      alias: config.displayName || df.name || df.refId || '',
+      // alias: config.displayName || df.name || df.refId || '',
+      alias: aliasName,
       displayValue: isDisplayValue ? displayValue : undefined,
       link,
     };
@@ -261,6 +262,12 @@ export function buildStatusMetricProps(
       disables.push(props);
     }
   });
+});
+
+  
+
+  
+  
 
   //Hannah's code
   let panelStatus: StatusType = 'ok';
