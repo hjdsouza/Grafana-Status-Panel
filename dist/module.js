@@ -1180,6 +1180,18 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
     return [nonNullValue, aliasName];
   }
   var processedAlias = new Set(); //to keep track of processed alias names
+  //Create a set of expected aliases
+  var expectedAliases = new Set();
+  data.series.forEach(function (df) {
+    df.fields.forEach(function (field) {
+      var config = lodash__WEBPACK_IMPORTED_MODULE_3___default.a.defaultsDeep(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, field.config), fieldConfig.defaults);
+      if (config.custom && config.custom.thresholds) {
+        Object.keys(config.custom.thresholds).forEach(function (alias) {
+          expectedAliases.add(alias);
+        });
+      }
+    });
+  });
   data.series.forEach(function (df) {
     df.fields.forEach(function (field) {
       var _a, _b;
@@ -1205,6 +1217,7 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       }
       // Mark this alias as processed
       processedAlias.add(aliasName);
+      expectedAliases["delete"](aliasName);
       // determine field status & handle formatting based on value handler
       var fieldStatus = config.custom.displayAliasType === 'Always' ? 'ok' : 'hide';
       var displayValue = '';
@@ -1371,6 +1384,14 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
         disables.push(props);
       }
     });
+  });
+  // Handle aliases with no data
+  expectedAliases.forEach(function (aliasName) {
+    var props = {
+      alias: aliasName,
+      displayValue: "No Data"
+    };
+    displays.push(props);
   });
   //Hannah's code
   var panelStatus = 'ok';

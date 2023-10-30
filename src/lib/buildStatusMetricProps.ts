@@ -249,6 +249,7 @@ data.series.forEach(df => {
       link,
     };
 
+
     //print the alias name 
     // console.log("Alias:", props.alias);
 
@@ -280,6 +281,17 @@ data.series.forEach(df => {
       disables.push(props);
     }
   });
+});
+
+// Handle aliases with no data
+expectedAliases.forEach(aliasName => {
+  let props: StatusMetricProp = {
+    alias: aliasName as string,
+    displayValue: "No Data",
+    // ... other properties as needed
+  };
+
+  displays.push(props);
 });
 
   
