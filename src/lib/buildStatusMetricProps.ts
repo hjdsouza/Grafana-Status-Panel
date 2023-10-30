@@ -51,6 +51,19 @@ export function buildStatusMetricProps(
   }
 
   const processedAlias = new Set(); //to keep track of processed alias names
+  
+  //Create a set of expected aliases
+const expectedAliases = new Set();
+data.series.forEach(df => {
+  df.fields.forEach(field => {
+    const config: FieldConfig<StatusFieldOptions> = _.defaultsDeep({ ...field.config }, fieldConfig.defaults);
+    if (config.custom && config.custom.thresholds) {
+      Object.keys(config.custom.thresholds).forEach(alias => {
+        expectedAliases.add(alias);
+      });
+    }
+  });
+});
 
   data.series.forEach(df => {
     df.fields.forEach(field => {
@@ -77,6 +90,7 @@ export function buildStatusMetricProps(
       }
       // Mark this alias as processed
       processedAlias.add(aliasName);
+      expectedAliases.delete(aliasName);
 
       // determine field status & handle formatting based on value handler
       let fieldStatus: StatusType = config.custom.displayAliasType === 'Always' ? 'ok' : 'hide';
