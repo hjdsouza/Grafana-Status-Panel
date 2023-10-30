@@ -285,13 +285,15 @@ data.series.forEach(df => {
 
 // Handle aliases with no data
 expectedAliases.forEach(aliasName => {
+  let fieldStatus: StatusType = 'crit';
   let props: StatusMetricProp = {
     alias: aliasName as string,
     displayValue: "No Data",
     // ... other properties as needed
   };
 
-  displays.push(props);
+  // displays.push(props);
+  crits.push(props);
 });
 
   
@@ -305,6 +307,14 @@ expectedAliases.forEach(aliasName => {
     panelStatus = 'crit';
   } else if (Object.values(aliasStatuses).includes('warn')) {
     panelStatus = 'warn';
+  }
+  // Additionally check for aliases with no data
+  if (panelStatus === 'ok') {
+    if (crits.length > 0) {
+      panelStatus = 'crit';
+    } else if (warns.length > 0) {
+      panelStatus = 'warn';
+    }
   }
 
   return { annotations, disables, crits, warns, displays, panelStatus };

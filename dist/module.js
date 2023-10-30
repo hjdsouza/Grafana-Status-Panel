@@ -1387,11 +1387,13 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
   });
   // Handle aliases with no data
   expectedAliases.forEach(function (aliasName) {
+    var fieldStatus = 'crit';
     var props = {
       alias: aliasName,
       displayValue: "No Data"
     };
-    displays.push(props);
+    // displays.push(props);
+    crits.push(props);
   });
   //Hannah's code
   var panelStatus = 'ok';
@@ -1399,6 +1401,14 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
     panelStatus = 'crit';
   } else if (Object.values(aliasStatuses).includes('warn')) {
     panelStatus = 'warn';
+  }
+  // Additionally check for aliases with no data
+  if (panelStatus === 'ok') {
+    if (crits.length > 0) {
+      panelStatus = 'crit';
+    } else if (warns.length > 0) {
+      panelStatus = 'warn';
+    }
   }
   return {
     annotations: annotations,
