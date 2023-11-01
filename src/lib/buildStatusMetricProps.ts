@@ -163,6 +163,14 @@ data.series.forEach(df => {
 
     if (config.custom.aggregation !== 'dataage') {
       switch (aliasThresholds.valueHandler) {
+
+        // Hannah's code adding case for "Text only"
+        case 'Text Only':
+          displayValue = value.toString();
+          console.log(displayValue);
+          fieldStatus = 'ok';
+          break;
+
         case 'Number Threshold':
           // let value: number = field.state.calcs![config.custom.aggregation];
           const crit = +aliasThresholds.crit; // Access from aliasThresholds
@@ -285,7 +293,7 @@ data.series.forEach(df => {
 
 // Handle aliases with no data
 expectedAliases.forEach(aliasName => {
-  let fieldStatus: StatusType = 'crit';
+  // let fieldStatus: StatusType = 'crit';
   let props: StatusMetricProp = {
     alias: aliasName as string,
     displayValue: "No Data",
@@ -295,11 +303,6 @@ expectedAliases.forEach(aliasName => {
   // displays.push(props);
   crits.push(props);
 });
-
-  
-
-  
-  
 
   //Hannah's code
   let panelStatus: StatusType = 'ok';

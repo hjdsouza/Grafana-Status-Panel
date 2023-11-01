@@ -641,7 +641,7 @@ var StatusPanel = function StatusPanel(_a) {
       color: options.colors.disable
     }),
     noData: Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
-      color: options.colors.disable
+      color: options.colors.crit
     }),
     hide: Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
       display: 'none'
@@ -1279,6 +1279,12 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       // End of Data Age implementation
       if (config.custom.aggregation !== 'dataage') {
         switch (aliasThresholds.valueHandler) {
+          // Hannah's code adding case for "Text only"
+          case 'Text Only':
+            displayValue = value.toString();
+            console.log(displayValue);
+            fieldStatus = 'ok';
+            break;
           case 'Number Threshold':
             // let value: number = field.state.calcs![config.custom.aggregation];
             var crit = +aliasThresholds.crit; // Access from aliasThresholds
@@ -1387,7 +1393,7 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
   });
   // Handle aliases with no data
   expectedAliases.forEach(function (aliasName) {
-    var fieldStatus = 'crit';
+    // let fieldStatus: StatusType = 'crit';
     var props = {
       alias: aliasName,
       displayValue: "No Data"

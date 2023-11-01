@@ -31,7 +31,7 @@ export const StatusPanel: React.FC<Props> = ({
     warn: css({ color: options.colors.warn }),
     crit: css({ color: options.colors.crit }),
     disable: css({ color: options.colors.disable }),
-    noData: css({ color: options.colors.disable }),
+    noData: css({ color: options.colors.crit }),
     hide: css({ display: 'none' }),
   };
 
