@@ -932,6 +932,10 @@ var valueHandlerOptions = [{
   label: 'Text Only',
   value: 'Text Only',
   description: 'Show the alias + the value on the panel without any condition.'
+}, {
+  label: 'Javascript',
+  value: 'Javascript',
+  description: ''
 }];
 var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
   var value = _a.value,
@@ -1336,10 +1340,10 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
         return;
       }
       console.log('fieldConfig.defaults:', fieldConfig.defaults);
-      // Ensure perAliasOptions is initialized
-      if (!config.custom.perAliasOptions) {
-        config.custom.perAliasOptions = {}; // Initialize if not present
-      }
+      // // Ensure perAliasOptions is initialized
+      // if (!config.custom.perAliasOptions) {
+      //   config.custom.perAliasOptions = {}; // Initialize if not present
+      // }
       // Extract the first non-null value and the alias
       var _c = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(extractLastValueAndAlias(df, field), 2),
         value = _c[0],
@@ -1465,17 +1469,21 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
             }
             break;
           case 'Date Threshold':
-            var aliasAggregationMethod = aliasOptions ? aliasOptions.aggregation : 'last'; // Replace 'defaultAggregationMethod' with your actual default
-            var val = field.state.calcs[aliasAggregationMethod];
-            var date = Object(_grafana_data__WEBPACK_IMPORTED_MODULE_1__["dateTimeAsMoment"])(val);
-            if (timeZone === 'utc') {
-              date = date.utc();
-            }
-            displayValue = date.format(aliasOptions ? aliasOptions.dateFormat : 'YYYY-MM-DD HH:mm:ss');
-            if (val === aliasThresholds.crit) {
-              fieldStatus = 'crit';
-            } else if (val === aliasThresholds.warn) {
-              fieldStatus = 'warn';
+            var aliasAggregationMethod = aliasOptions && aliasOptions.aggregation ? aliasOptions.aggregation : 'last';
+            if (field.state && field.state.calcs && aliasAggregationMethod in field.state.calcs) {
+              var val = field.state.calcs[aliasAggregationMethod];
+              var date = Object(_grafana_data__WEBPACK_IMPORTED_MODULE_1__["dateTimeAsMoment"])(val);
+              if (timeZone === 'utc') {
+                date = date.utc();
+              }
+              displayValue = date.format(aliasOptions ? aliasOptions.dateFormat : 'YYYY-MM-DD HH:mm:ss');
+              if (val === aliasThresholds.crit) {
+                fieldStatus = 'crit';
+              } else if (val === aliasThresholds.warn) {
+                fieldStatus = 'warn';
+              }
+            } else {
+              console.log("Missing Aggregation method");
             }
             break;
           case 'Disable Criteria':

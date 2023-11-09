@@ -1,6 +1,5 @@
 import { FieldOverrideEditorProps, SelectableValue } from '@grafana/data';
 import { Button, Input, Label, Select } from '@grafana/ui';
-import { StringNullableChain } from 'lodash';
 import React from 'react';
 import { useState } from 'react';
 
@@ -46,7 +45,7 @@ const displayType: Array<SelectableValue<string>> = [
 
 export interface StatusThresholdOptions {
   alias?: string;
-  valueHandler: 'Number Threshold' | 'String Threshold' | 'Date Threshold' | 'Disable Criteria' | 'Text Only';
+  valueHandler: 'Number Threshold' | 'String Threshold' | 'Date Threshold' | 'Disable Criteria' | 'Text Only'| 'Javascript';
   warn: string;
   crit: string;
   aggregation?: string; // New property for aggregation method
@@ -93,6 +92,11 @@ const valueHandlerOptions: Array<SelectableValue<StatusThresholdOptions['valueHa
     value: 'Text Only',
     description: 'Show the alias + the value on the panel without any condition.',
   },
+  {
+    label: 'Javascript',
+    value: 'Javascript',
+    description: ''
+  }
 ];
 
 export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<AliasThresholds, any>> = ({

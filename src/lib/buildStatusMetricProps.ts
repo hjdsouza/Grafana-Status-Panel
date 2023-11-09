@@ -84,10 +84,10 @@ export function buildStatusMetricProps(
       }
       console.log('fieldConfig.defaults:', fieldConfig.defaults);
 
-      // Ensure perAliasOptions is initialized
-      if (!config.custom.perAliasOptions) {
-        config.custom.perAliasOptions = {}; // Initialize if not present
-      }
+      // // Ensure perAliasOptions is initialized
+      // if (!config.custom.perAliasOptions) {
+      //   config.custom.perAliasOptions = {}; // Initialize if not present
+      // }
 
       // Extract the first non-null value and the alias
       const [value, aliasName] = extractLastValueAndAlias(df, field);
@@ -237,7 +237,9 @@ export function buildStatusMetricProps(
             }
             break;
           case 'Date Threshold':
-            const aliasAggregationMethod = aliasOptions ? aliasOptions.aggregation : 'last'; // Replace 'defaultAggregationMethod' with your actual default
+            const aliasAggregationMethod = aliasOptions && aliasOptions.aggregation ? aliasOptions.aggregation : 'last';
+            if (field.state && field.state.calcs && aliasAggregationMethod in field.state.calcs) {
+
             const val: string = field.state.calcs![aliasAggregationMethod];
             let date = dateTimeAsMoment(val);
             if (timeZone === 'utc') {
@@ -251,6 +253,10 @@ export function buildStatusMetricProps(
             } else if (val === aliasThresholds.warn) {
               fieldStatus = 'warn';
             }
+          }
+          else{
+            console.log("Missing Aggregation method")
+          }
             break;
           case 'Disable Criteria':
             // Make sure to check that aliasOptions and the aggregation method are defined
