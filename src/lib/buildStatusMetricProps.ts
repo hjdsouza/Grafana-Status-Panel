@@ -268,6 +268,10 @@ export function buildStatusMetricProps(
               }
             }
             break;
+            case 'Javascript':
+              {
+
+              }
         }
       }
       //Hannah's code
@@ -370,22 +374,6 @@ export function buildStatusMetricProps(
     } else if (warns.length > 0) {
       panelStatus = 'warn';
     }
-  }
-
-  function getDefaultAliasOptions() {
-    return {
-      // default properties for an alias
-      aggregation: 'dataage',
-      valueDisplayRegex: '',
-      fontFormat: 'Regular', // Set a default fontFormat
-      displayType: 'Regular',
-      // fontFormat: 'Bold',
-      // dateFormat: string,
-      displayAliasType: 'Always',
-      displayValueWithAlias: 'When Alias Displayed',
-      // disabledValue: string;
-      // ... (other default properties)
-    };
   }
 
   return { annotations, disables, crits, warns, displays, panelStatus };

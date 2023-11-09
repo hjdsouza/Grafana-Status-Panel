@@ -910,7 +910,7 @@ var displayType = [{
   value: 'Regular'
 }, {
   label: 'Annotation',
-  value: 'When Annotation Displayed'
+  value: 'Annotation'
 }];
 var valueHandlerOptions = [{
   label: 'Number Threshold',
@@ -1496,6 +1496,8 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
               }
             }
             break;
+          case 'Javascript':
+            {}
         }
       }
       //Hannah's code
@@ -1586,19 +1588,6 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
     } else if (warns.length > 0) {
       panelStatus = 'warn';
     }
-  }
-  function getDefaultAliasOptions() {
-    return {
-      // default properties for an alias
-      aggregation: 'dataage',
-      valueDisplayRegex: '',
-      fontFormat: 'Regular',
-      displayType: 'Regular',
-      // fontFormat: 'Bold',
-      // dateFormat: string,
-      displayAliasType: 'Always',
-      displayValueWithAlias: 'When Alias Displayed'
-    };
   }
   return {
     annotations: annotations,

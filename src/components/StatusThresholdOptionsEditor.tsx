@@ -35,7 +35,7 @@ const displayValueWithAlias: Array<SelectableValue<string>> = [
 
 const displayType: Array<SelectableValue<string>> = [
   { label: 'Regular', value: 'Regular' },
-  { label: 'Annotation', value: 'When Annotation Displayed' },
+  { label: 'Annotation', value: 'Annotation' },
 ];
 
 
