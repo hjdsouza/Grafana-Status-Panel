@@ -1,7 +1,45 @@
 import { FieldOverrideEditorProps, SelectableValue } from '@grafana/data';
 import { Button, Input, Label, Select } from '@grafana/ui';
+import { StringNullableChain } from 'lodash';
 import React from 'react';
-import {useState} from 'react';
+import { useState } from 'react';
+
+
+const aggregationOptions: Array<SelectableValue<string>> = [
+  { label: 'Last', value: 'last' },
+  { label: 'First', value: 'first' },
+  { label: 'Max', value: 'max' },
+  { label: 'Min', value: 'min' },
+  { label: 'Sum', value: 'sum' },
+  { label: 'Avg', value: 'mean' },
+  { label: 'Delta', value: 'delta' },
+  { label: 'Data Age', value: 'dataage' },
+];
+
+const fontFormatOptions: Array<SelectableValue<string>> = [
+  { label: 'Regular', value: 'Regular' },
+  { label: 'Bold', value: 'Bold' },
+  { label: 'Italic', value: 'Italic' },
+];
+
+const displayAliasType: Array<SelectableValue<string>> = [
+  { label: 'Warning / Critical', value: 'Warning / Critical' },
+  { label: 'Always', value: 'Always' },
+];
+
+const displayValueWithAlias: Array<SelectableValue<string>> = [
+  { label: 'Never', value: 'Never' },
+  { label: 'When Alias Displayed', value: 'When Alias Displayed' },
+  { label: 'Warning / Critical', value: 'Warning / Critical' },
+  { label: 'Critical Only', value: 'Critical Only' },
+];
+
+const displayType: Array<SelectableValue<string>> = [
+  { label: 'Regular', value: 'Regular' },
+  { label: 'Annotation', value: 'When Annotation Displayed' },
+];
+
+
 
 
 
@@ -11,6 +49,15 @@ export interface StatusThresholdOptions {
   valueHandler: 'Number Threshold' | 'String Threshold' | 'Date Threshold' | 'Disable Criteria' | 'Text Only';
   warn: string;
   crit: string;
+  aggregation?: string; // New property for aggregation method
+  fontFormat?: string;
+  displayAliasType?: string;
+  displayValueWithAlias?: string;
+  valueDisplayRegex?: string;
+  displayType?: string;
+  dateFormat?: string;
+  disabledValue?: string;
+
 }
 
 export interface AliasThresholds {
@@ -58,7 +105,7 @@ export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<Ali
 
   const addAlias = () => {
     if (newAliasName) {
-      onChange({ ...value, [newAliasName]: { valueHandler: 'Number Threshold', crit: '90', warn: '70' } });
+      onChange({ ...value, [newAliasName]: { valueHandler: 'Number Threshold', crit: '90', warn: '70', aggregation: 'dataage',  } });
       setNewAliasName('');  // Reset the input after adding
     }
   };
@@ -119,6 +166,8 @@ export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<Ali
   );
 };
 
+
+// Update SingleAliasThresholdEditor to include the aggregation select component
 const SingleAliasThresholdEditor: React.FC<{
   value: StatusThresholdOptions;
   onChange: (value: StatusThresholdOptions) => void;
@@ -131,6 +180,7 @@ const SingleAliasThresholdEditor: React.FC<{
   } else if (value.valueHandler === 'Date Threshold') {
     inputType = 'datetime-local';
   }
+  console.log('Rendering with value:', value);
 
   return (
     <>
@@ -155,6 +205,54 @@ const SingleAliasThresholdEditor: React.FC<{
           ></Input>
         </>
       )}
+      <Label>Font Format</Label>
+      <Select
+        value={value.fontFormat}
+        options={fontFormatOptions}
+        onChange={({ value: newFontFormat }) => onChange({ ...value, fontFormat: newFontFormat })}
+      />
+      {/* Aggregation select component */}
+      <Label>Aggregation Method</Label>
+      <Select
+        value={value.aggregation}
+        options={aggregationOptions}
+        onChange={({ value: newAggregation }) => onChange({ ...value, aggregation: newAggregation })}
+      />
+      <Label>Display Alias Type</Label>
+      <Select
+        value={value.displayAliasType}
+        options={displayAliasType}
+        onChange={({ value: newDisplayAliasType }) => onChange({ ...value, displayAliasType: newDisplayAliasType })}
+      />
+      <Label>Display Value with Alias</Label>
+      <Select
+        value={value.displayValueWithAlias}
+        options={displayValueWithAlias}
+        onChange={({ value: newDisplayValueWithAlias }) => onChange({ ...value, displayValueWithAlias: newDisplayValueWithAlias })}
+      />
+      <Label>Display Position</Label>
+      <Select
+        value={value.displayType}
+        options={displayType}
+        onChange={({ value: newDisplayType }) => onChange({ ...value, displayType: newDisplayType })}
+      />
+            {/* Date Format Input */}
+            <Label>Date Format</Label>
+      <Input
+        type="text"
+        value={value.dateFormat || ''} // Use an empty string if dateFormat is undefined
+        onChange={(e) => onChange({ ...value, dateFormat: e.currentTarget.value })}
+        placeholder="Enter date format"
+      />
+      {/* Disabled Value Input */}
+      <Label>Disabled Value</Label>
+      <Input
+        type="text"
+        value={value.disabledValue || ''} // Use an empty string if disabledValue is undefined
+        onChange={(e) => onChange({ ...value, disabledValue: e.currentTarget.value })}
+        placeholder="Enter disabled value"
+      />
     </>
   );
 };
+

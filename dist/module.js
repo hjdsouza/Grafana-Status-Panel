@@ -850,6 +850,68 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var aggregationOptions = [{
+  label: 'Last',
+  value: 'last'
+}, {
+  label: 'First',
+  value: 'first'
+}, {
+  label: 'Max',
+  value: 'max'
+}, {
+  label: 'Min',
+  value: 'min'
+}, {
+  label: 'Sum',
+  value: 'sum'
+}, {
+  label: 'Avg',
+  value: 'mean'
+}, {
+  label: 'Delta',
+  value: 'delta'
+}, {
+  label: 'Data Age',
+  value: 'dataage'
+}];
+var fontFormatOptions = [{
+  label: 'Regular',
+  value: 'Regular'
+}, {
+  label: 'Bold',
+  value: 'Bold'
+}, {
+  label: 'Italic',
+  value: 'Italic'
+}];
+var displayAliasType = [{
+  label: 'Warning / Critical',
+  value: 'Warning / Critical'
+}, {
+  label: 'Always',
+  value: 'Always'
+}];
+var displayValueWithAlias = [{
+  label: 'Never',
+  value: 'Never'
+}, {
+  label: 'When Alias Displayed',
+  value: 'When Alias Displayed'
+}, {
+  label: 'Warning / Critical',
+  value: 'Warning / Critical'
+}, {
+  label: 'Critical Only',
+  value: 'Critical Only'
+}];
+var displayType = [{
+  label: 'Regular',
+  value: 'Regular'
+}, {
+  label: 'Annotation',
+  value: 'When Annotation Displayed'
+}];
 var valueHandlerOptions = [{
   label: 'Number Threshold',
   value: 'Number Threshold',
@@ -889,7 +951,8 @@ var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
       onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), (_a = {}, _a[newAliasName] = {
         valueHandler: 'Number Threshold',
         crit: '90',
-        warn: '70'
+        warn: '70',
+        aggregation: 'dataage'
       }, _a)));
       setNewAliasName(''); // Reset the input after adding
     }
@@ -956,6 +1019,7 @@ var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
     onClick: addAlias
   }, "Add Alias")));
 };
+// Update SingleAliasThresholdEditor to include the aggregation select component
 var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
   var value = _a.value,
     _onChange = _a.onChange;
@@ -967,6 +1031,7 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
   } else if (value.valueHandler === 'Date Threshold') {
     inputType = 'datetime-local';
   }
+  console.log('Rendering with value:', value);
   return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
     value: value.valueHandler,
     options: valueHandlerOptions,
@@ -994,7 +1059,70 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
         warn: warn
       }));
     }
-  })));
+  })), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Font Format"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+    value: value.fontFormat,
+    options: fontFormatOptions,
+    onChange: function onChange(_a) {
+      var newFontFormat = _a.value;
+      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+        fontFormat: newFontFormat
+      }));
+    }
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Aggregation Method"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+    value: value.aggregation,
+    options: aggregationOptions,
+    onChange: function onChange(_a) {
+      var newAggregation = _a.value;
+      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+        aggregation: newAggregation
+      }));
+    }
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Display Alias Type"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+    value: value.displayAliasType,
+    options: displayAliasType,
+    onChange: function onChange(_a) {
+      var newDisplayAliasType = _a.value;
+      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+        displayAliasType: newDisplayAliasType
+      }));
+    }
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Display Value with Alias"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+    value: value.displayValueWithAlias,
+    options: displayValueWithAlias,
+    onChange: function onChange(_a) {
+      var newDisplayValueWithAlias = _a.value;
+      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+        displayValueWithAlias: newDisplayValueWithAlias
+      }));
+    }
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Display Position"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+    value: value.displayType,
+    options: displayType,
+    onChange: function onChange(_a) {
+      var newDisplayType = _a.value;
+      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+        displayType: newDisplayType
+      }));
+    }
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Date Format"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
+    type: "text",
+    value: value.dateFormat || '',
+    onChange: function onChange(e) {
+      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+        dateFormat: e.currentTarget.value
+      }));
+    },
+    placeholder: "Enter date format"
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Disabled Value"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
+    type: "text",
+    value: value.disabledValue || '',
+    onChange: function onChange(e) {
+      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+        disabledValue: e.currentTarget.value
+      }));
+    },
+    placeholder: "Enter disabled value"
+  }));
 };
 
 /***/ }),
@@ -1207,6 +1335,11 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       if (!config.custom) {
         return;
       }
+      console.log('fieldConfig.defaults:', fieldConfig.defaults);
+      // Ensure perAliasOptions is initialized
+      if (!config.custom.perAliasOptions) {
+        config.custom.perAliasOptions = {}; // Initialize if not present
+      }
       // Extract the first non-null value and the alias
       var _c = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(extractLastValueAndAlias(df, field), 2),
         value = _c[0],
@@ -1218,15 +1351,30 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       // Mark this alias as processed
       processedAlias.add(aliasName);
       expectedAliases["delete"](aliasName);
-      // determine field status & handle formatting based on value handler
-      var fieldStatus = config.custom.displayAliasType === 'Always' ? 'ok' : 'hide';
-      var displayValue = '';
       // Hannah's code
       // const aliasName = config.displayName || df.name || df.refId || ''
       if (!aliases.includes(aliasName)) {
         aliases.push(aliasName);
       }
+      var aliasOptions = config.custom.thresholds[aliasName];
+      //DEBUGGING STATEMENTS
+      // console.log('fieldConfig:', fieldConfig);
+      // console.log('fieldConfig.defaults:', fieldConfig.defaults);
+      console.log('config.custom:', config.custom);
+      console.log("thresholds for " + aliasName + ":", config.custom.thresholds[aliasName]);
+      //DEBUGGING STATEMENTS
       var aliasThresholds = config.custom.thresholds[aliasName];
+      var fieldStatus;
+      // determine field status & handle formatting based on value handler
+      if (aliasOptions && aliasOptions.displayAliasType) {
+        fieldStatus = aliasOptions.displayAliasType === 'Always' ? 'ok' : 'hide';
+      } else {
+        // If there is no specific displayAliasType for this alias, use a default value.
+        // The default here is 'hide', but you can choose 'ok' or any other status as default.
+        fieldStatus = 'ok'; // or 'ok' if you want to show it by default
+      }
+
+      var displayValue = '';
       if (!aliasThresholds) {
         console.warn("No thresholds defined for alias: " + aliasName);
         return; // Skip to the next iteration of the loop
@@ -1235,7 +1383,9 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       /*
                 START OF DATA AGE
                 */
-      if (config.custom.aggregation === 'dataage') {
+      // Check if there's a specific aggregation method for this alias
+      var aliasAggregation = aliasOptions ? aliasOptions.aggregation : null;
+      if (aliasAggregation === 'dataage') {
         // Extract the last timestamp from the time series data
         // console.log("Data Frame:",df);
         var lastTimestamp = (_a = df.fields.find(function (f) {
@@ -1277,7 +1427,7 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
         }
       }
       // End of Data Age implementation
-      if (config.custom.aggregation !== 'dataage') {
+      if (aliasAggregation !== 'dataage') {
         switch (aliasThresholds.valueHandler) {
           // Hannah's code adding case for "Text only"
           case 'Text Only':
@@ -1315,12 +1465,13 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
             }
             break;
           case 'Date Threshold':
-            var val = field.state.calcs[config.custom.aggregation];
+            var aliasAggregationMethod = aliasOptions ? aliasOptions.aggregation : 'last'; // Replace 'defaultAggregationMethod' with your actual default
+            var val = field.state.calcs[aliasAggregationMethod];
             var date = Object(_grafana_data__WEBPACK_IMPORTED_MODULE_1__["dateTimeAsMoment"])(val);
             if (timeZone === 'utc') {
               date = date.utc();
             }
-            displayValue = date.format(config.custom.dateFormat);
+            displayValue = date.format(aliasOptions ? aliasOptions.dateFormat : 'YYYY-MM-DD HH:mm:ss');
             if (val === aliasThresholds.crit) {
               fieldStatus = 'crit';
             } else if (val === aliasThresholds.warn) {
@@ -1328,8 +1479,13 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
             }
             break;
           case 'Disable Criteria':
-            if (field.state.calcs[config.custom.aggregation] === config.custom.disabledValue) {
-              fieldStatus = 'disable';
+            // Make sure to check that aliasOptions and the aggregation method are defined
+            if (aliasOptions && aliasOptions.disabledValue !== undefined) {
+              var aggregationMethod = aliasOptions.aggregation || 'last';
+              var calculatedValue = field.state.calcs[aggregationMethod];
+              if (calculatedValue === aliasOptions.disabledValue) {
+                fieldStatus = 'disable';
+              }
             }
             break;
         }
@@ -1337,13 +1493,15 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       //Hannah's code
       aliasStatuses[aliasName] = fieldStatus;
       // only display value when appropriate
-      var withAlias = config.custom.displayValueWithAlias;
+      var withAlias = aliasOptions ? aliasOptions.displayValueWithAlias : 'When Alias Displayed';
       var isDisplayValue = withAlias === 'When Alias Displayed' || fieldStatus === 'warn' && withAlias === 'Warning / Critical' || fieldStatus === 'crit' && (withAlias === 'Warning / Critical' || withAlias === 'Critical Only');
       // apply RegEx if value will be displayed
-      if (isDisplayValue && config.custom.valueDisplayRegex) {
+      if (isDisplayValue && aliasOptions && aliasOptions.valueDisplayRegex) {
         try {
-          displayValue = displayValue.replace(new RegExp(config.custom.valueDisplayRegex), '');
-        } catch (_d) {}
+          displayValue = displayValue.replace(new RegExp(aliasOptions.valueDisplayRegex), '');
+        } catch (_d) {
+          // Handle any regex errors or fallback scenario here if necessary
+        }
       }
       // get first link and interpolate variables
       var link = (_b = field.getLinks && field.getLinks({}), _b !== null && _b !== void 0 ? _b : [])[0];
@@ -1359,17 +1517,20 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       };
       //print the alias name 
       // console.log("Alias:", props.alias);
-      // set font format for field
-      if (fieldStatus !== 'ok') {
-        if (config.custom.fontFormat === 'Bold') {
+      if (aliasOptions) {
+        if (aliasOptions.fontFormat === 'Bold') {
           props.className = Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
             fontWeight: 'bold'
           });
-        } else if (config.custom.fontFormat === 'Italic') {
+        } else if (aliasOptions.fontFormat === 'Italic') {
           props.className = Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
             fontStyle: 'italic'
           });
         }
+        // Add any other conditions for different font formats if needed
+        // If you have default styles, apply them here when fontFormat is not set
+      } else {
+        // Apply default styling or do nothing if default styling is not required
       }
       // set color for field when colormode is Metric
       if (options.colorMode === 'Metric') {
@@ -1377,9 +1538,11 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       }
       // add to appropriate section
       if (fieldStatus === 'ok') {
-        if (config.custom.displayType === 'Regular') {
+        // If aliasOptions doesn't exist or displayType is 'Regular' or undefined, use 'Regular'
+        if (!aliasOptions || aliasOptions.displayType === 'Regular' || typeof aliasOptions.displayType === 'undefined') {
           displays.push(props);
         } else {
+          // If displayType is something other than 'Regular', handle accordingly (e.g., add to annotations)
           annotations.push(props);
         }
       } else if (fieldStatus === 'warn') {
@@ -1416,6 +1579,19 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       panelStatus = 'warn';
     }
   }
+  function getDefaultAliasOptions() {
+    return {
+      // default properties for an alias
+      aggregation: 'dataage',
+      valueDisplayRegex: '',
+      fontFormat: 'Regular',
+      displayType: 'Regular',
+      // fontFormat: 'Bold',
+      // dateFormat: string,
+      displayAliasType: 'Always',
+      displayValueWithAlias: 'When Alias Displayed'
+    };
+  }
   return {
     annotations: annotations,
     disables: disables,
@@ -1441,65 +1617,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var components_StatusThresholdOptionsEditor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! components/StatusThresholdOptionsEditor */ "./components/StatusThresholdOptionsEditor.tsx");
 
 var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder) {
-  return builder.addSelect({
-    path: 'aggregation',
-    name: 'Aggregation',
-    description: 'What to do if the query returns multiple data points.',
-    defaultValue: 'last',
-    settings: {
-      options: [{
-        label: 'Last',
-        value: 'last'
-      }, {
-        label: 'First',
-        value: 'first'
-      }, {
-        label: 'Max',
-        value: 'max'
-      }, {
-        label: 'Min',
-        value: 'min'
-      }, {
-        label: 'Sum',
-        value: 'sum'
-      }, {
-        label: 'Avg',
-        value: 'mean'
-      }, {
-        label: 'Delta',
-        value: 'delta'
-      }, {
-        label: 'Data Age',
-        value: 'dataage'
-      }]
-    },
-    category: ['Display Options']
-  }).addTextInput({
-    path: 'valueDisplayRegex',
-    name: 'Value Regex',
-    description: "A regex which will decide the part of the value to be displayed. In case the regex is empty or it doesn't match any part of the metrics value, all the metric value will be displayed.",
-    defaultValue: '',
-    settings: {},
-    category: ['Display Options']
-  }).addSelect({
-    path: 'fontFormat',
-    name: 'Font Format',
-    description: 'The metric text font format in disable, warning or critical state',
-    defaultValue: 'Regular',
-    settings: {
-      options: [{
-        label: 'Regular',
-        value: 'Regular'
-      }, {
-        label: 'Bold',
-        value: 'Bold'
-      }, {
-        label: 'Italic',
-        value: 'Italic'
-      }]
-    },
-    category: ['Display Options']
-  }).addCustomEditor({
+  return builder.addCustomEditor({
     path: 'thresholds',
     id: 'thresholds',
     name: 'Threshold Type',
@@ -1513,121 +1631,6 @@ var statusFieldOptionsBuilder = function statusFieldOptionsBuilder(builder) {
     },
     shouldApply: function shouldApply() {
       return true;
-    }
-  }).addSelect({
-    path: 'displayType',
-    name: 'Display Position',
-    description: 'The location the value will be displayed',
-    defaultValue: 'Regular',
-    settings: {
-      options: [{
-        label: 'Regular',
-        value: 'Regular',
-        description: 'The alias + the value will be display in the center, under the panel title'
-      }, {
-        label: 'Annotation',
-        value: 'Annotation',
-        description: 'The alias + the value will be displayed on top left. If the value answers a threshold condition, it will displayed as regular state'
-      }]
-    },
-    category: ['Display Options'],
-    showIf: function showIf(_a) {
-      var thresholds = _a.thresholds;
-      if (!thresholds) {
-        return false;
-      }
-      return Object.values(thresholds).some(function (threshold) {
-        return threshold && threshold.valueHandler !== 'Disable Criteria';
-      });
-    }
-  }).addTextInput({
-    path: 'dateFormat',
-    name: 'Date Format',
-    defaultValue: 'YYYY-MM-DD HH:mm:ss',
-    description: 'Specify the Date/Time format (Use "lll" for local date/time format)',
-    category: ['Display Options'],
-    showIf: function showIf(_a) {
-      var thresholds = _a.thresholds;
-      if (!thresholds) {
-        return false;
-      }
-      return Object.values(thresholds).some(function (threshold) {
-        return threshold && threshold.valueHandler !== 'Date Threshold';
-      });
-    }
-  }).addSelect({
-    path: 'displayAliasType',
-    name: 'Display Alias',
-    description: 'When to display the alias',
-    defaultValue: 'Warning / Critical',
-    settings: {
-      options: [{
-        label: 'Warning / Critical',
-        value: 'Warning / Critical',
-        description: 'The alias will be displayed in warning or critical state'
-      }, {
-        label: 'Always',
-        value: 'Always',
-        description: 'The alias will always be displayed, regardless critical and warning state'
-      }]
-    },
-    category: ['Display Options'],
-    showIf: function showIf(_a) {
-      var thresholds = _a.thresholds;
-      if (!thresholds) {
-        return false;
-      }
-      return Object.values(thresholds).some(function (threshold) {
-        return threshold && typeof threshold.valueHandler === 'string' && threshold.valueHandler.slice(-9) === 'Threshold';
-      });
-    }
-  }).addSelect({
-    path: 'displayValueWithAlias',
-    name: 'Display Value',
-    description: 'When to display the value along with the alias',
-    defaultValue: 'When Alias Displayed',
-    settings: {
-      options: [{
-        label: 'Never',
-        value: 'Never',
-        description: 'The value will never be displayed'
-      }, {
-        label: 'When Alias Displayed',
-        value: 'When Alias Displayed',
-        description: 'The value will be displayed always when alias is displayed'
-      }, {
-        label: 'Warning / Critical',
-        value: 'Warning / Critical',
-        description: 'The value will be displayed in warning or critical state'
-      }, {
-        label: 'Critical Only',
-        value: 'Critical Only',
-        description: 'The value will be displayed in critical only'
-      }]
-    },
-    category: ['Display Options'],
-    showIf: function showIf(_a) {
-      var thresholds = _a.thresholds;
-      if (!thresholds) {
-        return false;
-      }
-      return Object.values(thresholds).some(function (threshold) {
-        return threshold && typeof threshold.valueHandler === 'string' && threshold.valueHandler.slice(-9) === 'Threshold';
-      });
-    }
-  }).addTextInput({
-    path: 'disabledValue',
-    name: 'Disable Criteria',
-    description: 'The exact value which will make this panel to be displayed as disabled',
-    category: ['Threshold Options'],
-    showIf: function showIf(_a) {
-      var thresholds = _a.thresholds;
-      if (!thresholds) {
-        return false;
-      }
-      return Object.values(thresholds).some(function (threshold) {
-        return threshold && typeof threshold.valueHandler === 'string' && threshold.valueHandler.slice(-9) === 'Disable Criteria';
-      });
     }
   });
 };
