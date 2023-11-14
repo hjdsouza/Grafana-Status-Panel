@@ -30579,9 +30579,6 @@ var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
   var _d = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_2__["useState"])(''), 2),
     editedAliasName = _d[0],
     setEditedAliasName = _d[1];
-  var _e = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_2__["useState"])({}), 2),
-    javascriptCode = _e[0],
-    setJavascriptCode = _e[1]; // State variable to manage the javascript code
   var addAlias = function addAlias() {
     var _a;
     if (newAliasName) {
@@ -30618,18 +30615,6 @@ var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
     var _a;
     onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), (_a = {}, _a[alias] = threshold, _a)));
   };
-  // Event handlers
-  var handleRunClick = function handleRunClick(alias) {
-    var codeToRun = javascriptCode[alias];
-    // Logic to handle JavaScript code execution for the specific alias
-  };
-
-  var handleClearClick = function handleClearClick(alias) {
-    setJavascriptCode(function (prevCodes) {
-      var _a;
-      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, prevCodes), (_a = {}, _a[alias] = '', _a));
-    });
-  };
   return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, Object.entries(value || {}).map(function (_a) {
     var _b = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(_a, 2),
       alias = _b[0],
@@ -30657,30 +30642,7 @@ var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
       onChange: function onChange(newThreshold) {
         return setThresholdForAlias(alias, newThreshold);
       }
-    }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(SingleAliasThresholdEditor, {
-      value: threshold,
-      onChange: function onChange(newThreshold) {
-        return setThresholdForAlias(alias, newThreshold);
-      }
-    }), threshold.valueHandler === 'Javascript' && react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react_ace__WEBPACK_IMPORTED_MODULE_3___default.a, {
-      height: "200px",
-      mode: "javascript",
-      value: javascriptCode[alias] || '',
-      onChange: function onChange(newCode) {
-        return setJavascriptCode(function (prevCodes) {
-          var _a;
-          return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, prevCodes), (_a = {}, _a[alias] = newCode, _a));
-        });
-      }
-    }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("button", {
-      onClick: function onClick() {
-        return handleRunClick(alias);
-      }
-    }, "Run"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("button", {
-      onClick: function onClick() {
-        return handleClearClick(alias);
-      }
-    }, "Clear")));
+    }));
   }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
     placeholder: "Enter alias name",
     value: newAliasName,
@@ -30776,7 +30738,7 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
         displayType: newDisplayType
       }));
     }
-  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Date Format"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
+  }), "Date Format Input", react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Date Format"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
     type: "text",
     value: value.dateFormat || '',
     onChange: function onChange(e) {
@@ -30794,7 +30756,19 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
       }));
     },
     placeholder: "Enter disabled value"
-  }));
+  }), value.valueHandler === 'Javascript' && react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "JavaScript Code"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react_ace__WEBPACK_IMPORTED_MODULE_3___default.a, {
+    mode: "javascript",
+    theme: "monokai",
+    name: "javascript_code_editor",
+    value: value.javascriptCode || '',
+    onChange: function onChange(newCode) {
+      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+        javascriptCode: newCode
+      }));
+    },
+    height: "200px",
+    width: "100%"
+  })));
 };
 
 /***/ }),

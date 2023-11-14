@@ -56,7 +56,7 @@ export interface StatusThresholdOptions {
   displayType?: string;
   dateFormat?: string;
   disabledValue?: string;
-
+  javascriptCode?: string;
 }
 
 export interface AliasThresholds {
@@ -106,7 +106,6 @@ export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<Ali
   const [newAliasName, setNewAliasName] = useState('');
   const [editAlias, setEditAlias] = useState<string | null>(null);
   const [editedAliasName, setEditedAliasName] = useState('');
-  const [javascriptCode, setJavascriptCode] = useState<{[key: string]: string}>({}); // State variable to manage the javascript code
 
 
   const addAlias = () => {
@@ -142,15 +141,7 @@ export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<Ali
     onChange({ ...value, [alias]: threshold });
   };
 
-  // Event handlers
-  const handleRunClick = (alias:string) => {
-    const codeToRun = javascriptCode[alias];
-    // Logic to handle JavaScript code execution for the specific alias
-  };
 
-  const handleClearClick = (alias:string) => {
-    setJavascriptCode(prevCodes => ({ ...prevCodes, [alias]: '' }));
-  };
 
   return (
     <>
@@ -172,23 +163,6 @@ export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<Ali
             value={threshold}
             onChange={(newThreshold) => setThresholdForAlias(alias, newThreshold)}
           />
-          <SingleAliasThresholdEditor
-            value={threshold}
-            onChange={(newThreshold) => setThresholdForAlias(alias, newThreshold)}
-          />
-          {/* JavaScript Editor and Buttons for each Alias */}
-          {threshold.valueHandler === 'Javascript' && (
-            <>
-              <AceEditor
-                height="200px"
-                mode="javascript"
-                value={javascriptCode[alias] || ''}
-                onChange={(newCode:string) => setJavascriptCode(prevCodes => ({ ...prevCodes, [alias]: newCode }))}
-              />
-              <button onClick={() => handleRunClick(alias)}>Run</button>
-              <button onClick={() => handleClearClick(alias)}>Clear</button>
-            </>
-          )}
         </div>
       ))}
       <div>
@@ -272,7 +246,7 @@ const SingleAliasThresholdEditor: React.FC<{
         options={displayType}
         onChange={({ value: newDisplayType }) => onChange({ ...value, displayType: newDisplayType })}
       />
-      {/* Date Format Input */}
+      Date Format Input
       <Label>Date Format</Label>
       <Input
         type="text"
@@ -287,7 +261,22 @@ const SingleAliasThresholdEditor: React.FC<{
         value={value.disabledValue || ''} // Use an empty string if disabledValue is undefined
         onChange={(e) => onChange({ ...value, disabledValue: e.currentTarget.value })}
         placeholder="Enter disabled value"
-      />
+      />  
+      {/* JavaScript Code Editor - Only show when 'Javascript' is the selected valueHandler */}
+      {value.valueHandler === 'Javascript' && (
+        <>
+          <Label>JavaScript Code</Label>
+          <AceEditor
+            mode="javascript"
+            theme="monokai"
+            name="javascript_code_editor"
+            value={value.javascriptCode || ''}
+            onChange={(newCode) => onChange({ ...value, javascriptCode: newCode })}
+            height="200px"
+            width="100%"
+          />
+        </>
+      )}
     </>
   );
 };
