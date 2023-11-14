@@ -198,74 +198,94 @@ const SingleAliasThresholdEditor: React.FC<{
         value={value.valueHandler}
         options={valueHandlerOptions}
         onChange={({ value: valueHandler }) => valueHandler && onChange({ ...value, valueHandler })}
-      ></Select>
-      {inputType && (
+      />
+
+      {/* Render the following components only when valueHandler is not 'Javascript' */}
+      {value.valueHandler !== 'Javascript' && (
         <>
-          <Label>Critical Value</Label>
+          {/* Components for Critical Value, Warning Value, Font Format, etc. */}
+          {inputType && (
+            <>
+              <Label>Critical Value</Label>
+              <Input
+                value={value.crit}
+                type={inputType}
+                onChange={({ currentTarget: { value: crit } }) => onChange({ ...value, crit })}
+              ></Input>
+              <Label>Warning Value</Label>
+              <Input
+                value={value.warn}
+                type={inputType}
+                onChange={({ currentTarget: { value: warn } }) => onChange({ ...value, warn })}
+              ></Input>
+            </>
+          )}
+          <Label>Font Format</Label>
+          <Select
+            value={value.fontFormat}
+            options={fontFormatOptions}
+            onChange={({ value: newFontFormat }) => onChange({ ...value, fontFormat: newFontFormat })}
+          />
+          {/* Aggregation select component */}
+          <Label>Aggregation Method</Label>
+          <Select
+            value={value.aggregation}
+            options={aggregationOptions}
+            onChange={({ value: newAggregation }) => onChange({ ...value, aggregation: newAggregation })}
+          />
+          <Label>Display Alias Type</Label>
+          <Select
+            value={value.displayAliasType}
+            options={displayAliasType}
+            onChange={({ value: newDisplayAliasType }) => onChange({ ...value, displayAliasType: newDisplayAliasType })}
+          />
+          <Label>Display Value with Alias</Label>
+          <Select
+            value={value.displayValueWithAlias}
+            options={displayValueWithAlias}
+            onChange={({ value: newDisplayValueWithAlias }) => onChange({ ...value, displayValueWithAlias: newDisplayValueWithAlias })}
+          />
+          <Label>Display Position</Label>
+          <Select
+            value={value.displayType}
+            options={displayType}
+            onChange={({ value: newDisplayType }) => onChange({ ...value, displayType: newDisplayType })}
+          />
+          Date Format Input
+          <Label>Date Format</Label>
           <Input
-            value={value.crit}
-            type={inputType}
-            onChange={({ currentTarget: { value: crit } }) => onChange({ ...value, crit })}
-          ></Input>
-          <Label>Warning Value</Label>
+            type="text"
+            value={value.dateFormat || ''} // Use an empty string if dateFormat is undefined
+            onChange={(e) => onChange({ ...value, dateFormat: e.currentTarget.value })}
+            placeholder="Enter date format"
+          />
+          {/* Disabled Value Input */}
+          <Label>Disabled Value</Label>
           <Input
-            value={value.warn}
-            type={inputType}
-            onChange={({ currentTarget: { value: warn } }) => onChange({ ...value, warn })}
-          ></Input>
+            type="text"
+            value={value.disabledValue || ''} // Use an empty string if disabledValue is undefined
+            onChange={(e) => onChange({ ...value, disabledValue: e.currentTarget.value })}
+            placeholder="Enter disabled value"
+          />
         </>
       )}
-      <Label>Font Format</Label>
-      <Select
-        value={value.fontFormat}
-        options={fontFormatOptions}
-        onChange={({ value: newFontFormat }) => onChange({ ...value, fontFormat: newFontFormat })}
-      />
-      {/* Aggregation select component */}
-      <Label>Aggregation Method</Label>
-      <Select
-        value={value.aggregation}
-        options={aggregationOptions}
-        onChange={({ value: newAggregation }) => onChange({ ...value, aggregation: newAggregation })}
-      />
-      <Label>Display Alias Type</Label>
-      <Select
-        value={value.displayAliasType}
-        options={displayAliasType}
-        onChange={({ value: newDisplayAliasType }) => onChange({ ...value, displayAliasType: newDisplayAliasType })}
-      />
-      <Label>Display Value with Alias</Label>
-      <Select
-        value={value.displayValueWithAlias}
-        options={displayValueWithAlias}
-        onChange={({ value: newDisplayValueWithAlias }) => onChange({ ...value, displayValueWithAlias: newDisplayValueWithAlias })}
-      />
-      <Label>Display Position</Label>
-      <Select
-        value={value.displayType}
-        options={displayType}
-        onChange={({ value: newDisplayType }) => onChange({ ...value, displayType: newDisplayType })}
-      />
-      Date Format Input
-      <Label>Date Format</Label>
-      <Input
-        type="text"
-        value={value.dateFormat || ''} // Use an empty string if dateFormat is undefined
-        onChange={(e) => onChange({ ...value, dateFormat: e.currentTarget.value })}
-        placeholder="Enter date format"
-      />
-      {/* Disabled Value Input */}
-      <Label>Disabled Value</Label>
-      <Input
-        type="text"
-        value={value.disabledValue || ''} // Use an empty string if disabledValue is undefined
-        onChange={(e) => onChange({ ...value, disabledValue: e.currentTarget.value })}
-        placeholder="Enter disabled value"
-      />  
       {/* JavaScript Code Editor - Only show when 'Javascript' is the selected valueHandler */}
       {value.valueHandler === 'Javascript' && (
         <>
-          <Label>JavaScript Code</Label>
+          {/* Aggregation select component */}
+          <Label>Aggregation Method</Label>
+          <Select
+            value={value.aggregation}
+            options={aggregationOptions}
+            onChange={({ value: newAggregation }) => onChange({ ...value, aggregation: newAggregation })}
+          />
+          <Label>Display Position</Label>
+          <Select
+            value={value.displayType}
+            options={displayType}
+            onChange={({ value: newDisplayType }) => onChange({ ...value, displayType: newDisplayType })}
+          />
+                    <Label>JavaScript Code</Label>
           <AceEditor
             mode="javascript"
             theme="monokai"

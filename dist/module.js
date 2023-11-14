@@ -30675,7 +30675,7 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
         valueHandler: valueHandler
       }));
     }
-  }), inputType && react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Critical Value"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
+  }), value.valueHandler !== 'Javascript' && react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, inputType && react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Critical Value"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
     value: value.crit,
     type: inputType,
     onChange: function onChange(_a) {
@@ -30756,7 +30756,25 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
       }));
     },
     placeholder: "Enter disabled value"
-  }), value.valueHandler === 'Javascript' && react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "JavaScript Code"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react_ace__WEBPACK_IMPORTED_MODULE_3___default.a, {
+  })), value.valueHandler === 'Javascript' && react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Aggregation Method"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+    value: value.aggregation,
+    options: aggregationOptions,
+    onChange: function onChange(_a) {
+      var newAggregation = _a.value;
+      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+        aggregation: newAggregation
+      }));
+    }
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Display Position"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+    value: value.displayType,
+    options: displayType,
+    onChange: function onChange(_a) {
+      var newDisplayType = _a.value;
+      return _onChange(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, value), {
+        displayType: newDisplayType
+      }));
+    }
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "JavaScript Code"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react_ace__WEBPACK_IMPORTED_MODULE_3___default.a, {
     mode: "javascript",
     theme: "monokai",
     name: "javascript_code_editor",
