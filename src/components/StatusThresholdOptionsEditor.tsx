@@ -2,7 +2,9 @@ import { FieldOverrideEditorProps, SelectableValue } from '@grafana/data';
 import { Button, Input, Label, Select } from '@grafana/ui';
 import React from 'react';
 import { useState } from 'react';
-import { MonacoDiffEditor } from 'react-monaco-editor'; // Example for Monaco Editor
+import AceEditor from 'react-ace';
+import 'ace-builds/src-noconflict/mode-javascript';
+import 'ace-builds/src-noconflict/theme-monokai';
 
 
 
@@ -177,9 +179,9 @@ export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<Ali
           {/* JavaScript Editor and Buttons for each Alias */}
           {threshold.valueHandler === 'Javascript' && (
             <>
-              <MonacoDiffEditor
+              <AceEditor
                 height="200px"
-                language="javascript"
+                mode="javascript"
                 value={javascriptCode[alias] || ''}
                 onChange={(newCode:string) => setJavascriptCode(prevCodes => ({ ...prevCodes, [alias]: newCode }))}
               />
