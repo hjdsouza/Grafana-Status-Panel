@@ -2,6 +2,8 @@ import { FieldOverrideEditorProps, SelectableValue } from '@grafana/data';
 import { Button, Input, Label, Select } from '@grafana/ui';
 import React from 'react';
 import { useState } from 'react';
+import { MonacoDiffEditor } from 'react-monaco-editor'; // Example for Monaco Editor
+
 
 
 const aggregationOptions: Array<SelectableValue<string>> = [
@@ -39,13 +41,9 @@ const displayType: Array<SelectableValue<string>> = [
 ];
 
 
-
-
-
-
 export interface StatusThresholdOptions {
   alias?: string;
-  valueHandler: 'Number Threshold' | 'String Threshold' | 'Date Threshold' | 'Disable Criteria' | 'Text Only'| 'Javascript';
+  valueHandler: 'Number Threshold' | 'String Threshold' | 'Date Threshold' | 'Disable Criteria' | 'Text Only' | 'Javascript';
   warn: string;
   crit: string;
   aggregation?: string; // New property for aggregation method
@@ -106,10 +104,12 @@ export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<Ali
   const [newAliasName, setNewAliasName] = useState('');
   const [editAlias, setEditAlias] = useState<string | null>(null);
   const [editedAliasName, setEditedAliasName] = useState('');
+  const [javascriptCode, setJavascriptCode] = useState<{[key: string]: string}>({}); // State variable to manage the javascript code
+
 
   const addAlias = () => {
     if (newAliasName) {
-      onChange({ ...value, [newAliasName]: { valueHandler: 'Number Threshold', crit: '90', warn: '70', aggregation: 'dataage',  } });
+      onChange({ ...value, [newAliasName]: { valueHandler: 'Number Threshold', crit: '90', warn: '70', aggregation: 'dataage', } });
       setNewAliasName('');  // Reset the input after adding
     }
   };
@@ -140,6 +140,16 @@ export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<Ali
     onChange({ ...value, [alias]: threshold });
   };
 
+  // Event handlers
+  const handleRunClick = (alias:string) => {
+    const codeToRun = javascriptCode[alias];
+    // Logic to handle JavaScript code execution for the specific alias
+  };
+
+  const handleClearClick = (alias:string) => {
+    setJavascriptCode(prevCodes => ({ ...prevCodes, [alias]: '' }));
+  };
+
   return (
     <>
       {Object.entries(value || {}).map(([alias, threshold]) => (
@@ -160,12 +170,32 @@ export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<Ali
             value={threshold}
             onChange={(newThreshold) => setThresholdForAlias(alias, newThreshold)}
           />
+          <SingleAliasThresholdEditor
+            value={threshold}
+            onChange={(newThreshold) => setThresholdForAlias(alias, newThreshold)}
+          />
+          {/* JavaScript Editor and Buttons for each Alias */}
+          {threshold.valueHandler === 'Javascript' && (
+            <>
+              <MonacoDiffEditor
+                height="200px"
+                language="javascript"
+                value={javascriptCode[alias] || ''}
+                onChange={(newCode:string) => setJavascriptCode(prevCodes => ({ ...prevCodes, [alias]: newCode }))}
+              />
+              <button onClick={() => handleRunClick(alias)}>Run</button>
+              <button onClick={() => handleClearClick(alias)}>Clear</button>
+            </>
+          )}
         </div>
       ))}
       <div>
         <Input placeholder="Enter alias name" value={newAliasName} onChange={e => setNewAliasName(e.currentTarget.value)} />
         <Button onClick={addAlias}>Add Alias</Button>
+
+
       </div>
+
     </>
   );
 };
@@ -240,8 +270,8 @@ const SingleAliasThresholdEditor: React.FC<{
         options={displayType}
         onChange={({ value: newDisplayType }) => onChange({ ...value, displayType: newDisplayType })}
       />
-            {/* Date Format Input */}
-            <Label>Date Format</Label>
+      {/* Date Format Input */}
+      <Label>Date Format</Label>
       <Input
         type="text"
         value={value.dateFormat || ''} // Use an empty string if dateFormat is undefined
