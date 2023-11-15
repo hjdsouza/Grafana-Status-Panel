@@ -30275,6 +30275,7 @@ var StatusPanel = function StatusPanel(_a) {
     crits = _b.crits,
     warns = _b.warns,
     displays = _b.displays;
+  console.log('Disables Array:', disables);
   // clear other metrics when disabled and hide on disable
   if (options.isHideAlertsOnDisable && disables.length > 0) {
     crits = warns = displays = [];
@@ -31091,8 +31092,26 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
         }
       }
       // End of Data Age implementation
+      var aliasJavaScript = aliasOptions ? aliasOptions.javascriptCode : null;
       if (aliasAggregation !== 'dataage') {
         switch (aliasThresholds.valueHandler) {
+          case 'Javascript':
+            displayValue = value.toString();
+            if (aliasThresholds.valueHandler === 'Javascript' && aliasJavaScript) {
+              try {
+                console.log("Entering Javascript Case");
+                // Create a new function with 'value' as an argument and the provided JavaScript code as the body
+                var customFunction = new Function('value', aliasJavaScript);
+                // Convert value to a string and execute the custom function
+                var result = customFunction(value.toString());
+                // Determine the field status based on the result
+                fieldStatus = result ? 'disable' : 'ok';
+                console.log("FieldStatus is " + fieldStatus);
+              } catch (error) {
+                console.error('Error executing custom JavaScript code:', error);
+              }
+            }
+            break;
           // Hannah's code adding case for "Text only"
           case 'Text Only':
             displayValue = value.toString();

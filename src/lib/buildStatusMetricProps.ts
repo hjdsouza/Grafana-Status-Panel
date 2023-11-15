@@ -27,7 +27,7 @@ interface StatusMetricProp extends Omit<React.HTMLAttributes<HTMLDivElement>, 'c
 let aliasStatuses: Record<string, StatusType> = {};
 
 export function buildStatusMetricProps(
-  
+
   data: PanelData,
   fieldConfig: FieldConfigSource,
   options: StatusPanelOptions,
@@ -193,9 +193,33 @@ export function buildStatusMetricProps(
 
       }
       // End of Data Age implementation
-
+      const aliasJavaScript = aliasOptions ? aliasOptions.javascriptCode : null;
       if (aliasAggregation !== 'dataage') {
         switch (aliasThresholds.valueHandler) {
+
+          case 'Javascript':
+            displayValue = value.toString();
+            if (aliasThresholds.valueHandler === 'Javascript' && aliasJavaScript) {
+              try {
+                console.log("Entering Javascript Case");
+          
+                // Create a new function with 'value' as an argument and the provided JavaScript code as the body
+                const customFunction = new Function('value', aliasJavaScript);
+          
+                // Convert value to a string and execute the custom function
+                const result = customFunction(value.toString());
+          
+                // Determine the field status based on the result
+                fieldStatus = result ? 'disable' : 'ok';
+                console.log(`FieldStatus is ${fieldStatus}`);
+              } catch (error) {
+                console.error('Error executing custom JavaScript code:', error);
+              }
+            }
+            break;
+
+
+
 
           // Hannah's code adding case for "Text only"
           case 'Text Only':
@@ -240,23 +264,23 @@ export function buildStatusMetricProps(
             const aliasAggregationMethod = aliasOptions && aliasOptions.aggregation ? aliasOptions.aggregation : 'last';
             if (field.state && field.state.calcs && aliasAggregationMethod in field.state.calcs) {
 
-            const val: string = field.state.calcs![aliasAggregationMethod];
-            let date = dateTimeAsMoment(val);
-            if (timeZone === 'utc') {
-              date = date.utc();
-            }
+              const val: string = field.state.calcs![aliasAggregationMethod];
+              let date = dateTimeAsMoment(val);
+              if (timeZone === 'utc') {
+                date = date.utc();
+              }
 
-            displayValue = date.format(aliasOptions ? aliasOptions.dateFormat : 'YYYY-MM-DD HH:mm:ss');
+              displayValue = date.format(aliasOptions ? aliasOptions.dateFormat : 'YYYY-MM-DD HH:mm:ss');
 
-            if (val === aliasThresholds.crit) {
-              fieldStatus = 'crit';
-            } else if (val === aliasThresholds.warn) {
-              fieldStatus = 'warn';
+              if (val === aliasThresholds.crit) {
+                fieldStatus = 'crit';
+              } else if (val === aliasThresholds.warn) {
+                fieldStatus = 'warn';
+              }
             }
-          }
-          else{
-            console.log("Missing Aggregation method")
-          }
+            else {
+              console.log("Missing Aggregation method")
+            }
             break;
           case 'Disable Criteria':
             // Make sure to check that aliasOptions and the aggregation method are defined
@@ -268,10 +292,10 @@ export function buildStatusMetricProps(
               }
             }
             break;
-            case 'Javascript':
-              {
+          case 'Javascript':
+            {
 
-              }
+            }
         }
       }
       //Hannah's code

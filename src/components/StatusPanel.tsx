@@ -45,6 +45,9 @@ export const StatusPanel: React.FC<Props> = ({
     timeZone
   );
 
+
+  console.log('Disables Array:', disables);
+
   // clear other metrics when disabled and hide on disable
   if (options.isHideAlertsOnDisable && disables.length > 0) {
     crits = warns = displays = [];
