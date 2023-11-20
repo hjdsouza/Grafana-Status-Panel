@@ -30581,6 +30581,17 @@ var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
   var _d = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_2__["useState"])(''), 2),
     editedAliasName = _d[0],
     setEditedAliasName = _d[1];
+  //Code for expanding and collapsing alias
+  var _e = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__read"])(Object(react__WEBPACK_IMPORTED_MODULE_2__["useState"])({}), 2),
+    expandedAliases = _e[0],
+    setExpandedAliases = _e[1];
+  var toggleAlias = function toggleAlias(alias) {
+    setExpandedAliases(function (prevExpandedAliases) {
+      var _a;
+      return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])(Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"])({}, prevExpandedAliases), (_a = {}, _a[alias] = !prevExpandedAliases[alias] // Toggle the current state
+      , _a));
+    });
+  };
   var addAlias = function addAlias() {
     var _a;
     if (newAliasName) {
@@ -30623,28 +30634,41 @@ var StatusThresholdOptionsEditor = function StatusThresholdOptionsEditor(_a) {
       threshold = _b[1];
     return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("div", {
       key: alias
-    }, editAlias === alias ? react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
+    }, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("h4", {
+      onClick: function onClick() {
+        return toggleAlias(alias);
+      },
+      style: {
+        cursor: 'pointer',
+        userSelect: 'none',
+        fontSize: '15px',
+        fontWeight: 500,
+        lineHeight: '1.25',
+        color: 'rgb(204, 204, 220)',
+        fontFamily: 'Inter, Helvetica, Arial, sans-serif'
+      }
+    }, alias, " ", expandedAliases[alias] ? '▲' : '▼'), expandedAliases[alias] && react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, editAlias === alias ? react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
       value: editedAliasName,
       onChange: function onChange(e) {
         return setEditedAliasName(e.currentTarget.value);
       }
     }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Button"], {
       onClick: saveEditedAlias
-    }, "Save")) : react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("h4", null, alias), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+    }, "Save")) : react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Button"], {
       onClick: function onClick() {
         return startEditAlias(alias);
       }
-    }, "Edit")), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+    }, "Edit"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Button"], {
       variant: "destructive",
       onClick: function onClick() {
         return deleteAlias(alias);
       }
-    }, "Delete"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(SingleAliasThresholdEditor, {
+    }, "Delete")), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(SingleAliasThresholdEditor, {
       value: threshold,
       onChange: function onChange(newThreshold) {
         return setThresholdForAlias(alias, newThreshold);
       }
-    }));
+    })));
   }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement("div", null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
     placeholder: "Enter alias name",
     value: newAliasName,

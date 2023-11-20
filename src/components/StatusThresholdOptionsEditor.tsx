@@ -107,6 +107,16 @@ export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<Ali
   const [editAlias, setEditAlias] = useState<string | null>(null);
   const [editedAliasName, setEditedAliasName] = useState('');
 
+  //Code for expanding and collapsing alias
+  const [expandedAliases, setExpandedAliases] = useState<{ [key: string]: boolean }>({});
+
+  const toggleAlias = (alias: string) => {
+    setExpandedAliases(prevExpandedAliases => ({
+      ...prevExpandedAliases,
+      [alias]: !prevExpandedAliases[alias] // Toggle the current state
+    }));
+  };
+
 
   const addAlias = () => {
     if (newAliasName) {
@@ -147,35 +157,44 @@ export const StatusThresholdOptionsEditor: React.FC<FieldOverrideEditorProps<Ali
     <>
       {Object.entries(value || {}).map(([alias, threshold]) => (
         <div key={alias}>
-          {editAlias === alias ? (
+          <h4 onClick={() => toggleAlias(alias)} style={{             cursor: 'pointer', 
+            userSelect: 'none',
+            fontSize: '15px',
+            fontWeight: 500,
+            lineHeight: '1.25',
+            color: 'rgb(204, 204, 220)',
+            fontFamily: 'Inter, Helvetica, Arial, sans-serif'}}>
+            {alias} {expandedAliases[alias] ? '▲' : '▼'}
+          </h4>
+  
+          {expandedAliases[alias] && (
             <>
-              <Input value={editedAliasName} onChange={e => setEditedAliasName(e.currentTarget.value)} />
-              <Button onClick={saveEditedAlias}>Save</Button>
-            </>
-          ) : (
-            <>
-              <h4>{alias}</h4>
-              <Button onClick={() => startEditAlias(alias)}>Edit</Button>
+              {editAlias === alias ? (
+                <>
+                  <Input value={editedAliasName} onChange={e => setEditedAliasName(e.currentTarget.value)} />
+                  <Button onClick={saveEditedAlias}>Save</Button>
+                </>
+              ) : (
+                <>
+                  <Button onClick={() => startEditAlias(alias)}>Edit</Button>
+                  <Button variant="destructive" onClick={() => deleteAlias(alias)}>Delete</Button>
+                </>
+              )}
+              <SingleAliasThresholdEditor
+                value={threshold}
+                onChange={(newThreshold) => setThresholdForAlias(alias, newThreshold)}
+              />
             </>
           )}
-          <Button variant="destructive" onClick={() => deleteAlias(alias)}>Delete</Button>
-          <SingleAliasThresholdEditor
-            value={threshold}
-            onChange={(newThreshold) => setThresholdForAlias(alias, newThreshold)}
-          />
         </div>
       ))}
       <div>
         <Input placeholder="Enter alias name" value={newAliasName} onChange={e => setNewAliasName(e.currentTarget.value)} />
         <Button onClick={addAlias}>Add Alias</Button>
-
-
       </div>
-
     </>
   );
-};
-
+              }
 
 // Update SingleAliasThresholdEditor to include the aggregation select component
 const SingleAliasThresholdEditor: React.FC<{
