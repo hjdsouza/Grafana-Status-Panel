@@ -87,19 +87,19 @@ export const statusPanelOptionsBuilder = (builder: PanelOptionsEditorBuilder<Sta
       category: ['Threshold Options'],
     })
     // Default colors match Table Panel so colorised text is easier to read
-    .addCustomEditor({
-      id: 'colors',
-      path: 'colors',
-      name: 'Colors',
-      editor: StatusColorOptionsEditor,
-      defaultValue: {
-        crit: '#FF0000',  // Red for Critical
-        warn: '#FFFF00',  // Yellow for Warning
-        ok: '#00FF00',    // Green for OK
-        disable: '#F2495C' // Or any color for Disabled
-      },
-      category: ['Threshold Options'],
-    })
+    // .addCustomEditor({
+    //   id: 'colors',
+    //   path: 'colors',
+    //   name: 'Colors',
+    //   editor: StatusColorOptionsEditor,
+    //   defaultValue: {
+    //     crit: '#FF0000',  // Red for Critical
+    //     warn: '#FFFF00',  // Yellow for Warning
+    //     ok: '#00FF00',    // Green for OK
+    //     disable: '#F2495C' // Or any color for Disabled
+    //   },
+    //   category: ['Threshold Options'],
+    // })
     // .addBooleanSwitch({
     //   path: 'isAutoScrollOnOverflow',
     //   name: 'Auto scroll alerts on overflow',
@@ -124,3 +124,17 @@ export const statusPanelOptionsBuilder = (builder: PanelOptionsEditorBuilder<Sta
     //   defaultValue: false,
     //   category: ['Other Options'],
     // });
+    .addCustomEditor({
+      id: 'colors',
+      path: 'colors',
+      name: 'Colors',
+      editor: StatusColorOptionsEditor,
+      defaultValue: {
+        crit: '#FF0000',  // Red for Critical
+        warn: '#FFFF00',  // Yellow for Warning
+        ok: '#00FF00',    // Green for OK
+        disable: '#000000' // Or any color for Disabled
+      },
+      description: 'Default colors: Red for Critical, Yellow for Warning, Green for OK, and Black for Disabled. Customize as needed.',
+      category: ['Threshold Options'],
+    })

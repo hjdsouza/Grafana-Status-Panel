@@ -31506,6 +31506,43 @@ var statusPanelOptionsBuilder = function statusPanelOptionsBuilder(builder) {
     category: ['Threshold Options']
   })
   // Default colors match Table Panel so colorised text is easier to read
+  // .addCustomEditor({
+  //   id: 'colors',
+  //   path: 'colors',
+  //   name: 'Colors',
+  //   editor: StatusColorOptionsEditor,
+  //   defaultValue: {
+  //     crit: '#FF0000',  // Red for Critical
+  //     warn: '#FFFF00',  // Yellow for Warning
+  //     ok: '#00FF00',    // Green for OK
+  //     disable: '#F2495C' // Or any color for Disabled
+  //   },
+  //   category: ['Threshold Options'],
+  // })
+  // .addBooleanSwitch({
+  //   path: 'isAutoScrollOnOverflow',
+  //   name: 'Auto scroll alerts on overflow',
+  //   defaultValue: false,
+  //   category: ['Other Options'],
+  // })
+  // .addBooleanSwitch({
+  //   path: 'isGrayOnNoData',
+  //   name: "Use 'Disable' color if no data",
+  //   defaultValue: false,
+  //   category: ['Other Options'],
+  // })
+  // .addBooleanSwitch({
+  //   path: 'isIgnoreOKColors',
+  //   name: 'Ignore color in OK state',
+  //   defaultValue: false,
+  //   category: ['Other Options'],
+  // })
+  // .addBooleanSwitch({
+  //   path: 'isHideAlertsOnDisable',
+  //   name: 'Hide alerts in Disabled state',
+  //   defaultValue: false,
+  //   category: ['Other Options'],
+  // });
   .addCustomEditor({
     id: 'colors',
     path: 'colors',
@@ -31515,36 +31552,13 @@ var statusPanelOptionsBuilder = function statusPanelOptionsBuilder(builder) {
       crit: '#FF0000',
       warn: '#FFFF00',
       ok: '#00FF00',
-      disable: '#F2495C' // Or any color for Disabled
+      disable: '#000000' // Or any color for Disabled
     },
 
+    description: 'Default colors: Red for Critical, Yellow for Warning, Green for OK, and Black for Disabled. Customize as needed.',
     category: ['Threshold Options']
   });
 };
-// .addBooleanSwitch({
-//   path: 'isAutoScrollOnOverflow',
-//   name: 'Auto scroll alerts on overflow',
-//   defaultValue: false,
-//   category: ['Other Options'],
-// })
-// .addBooleanSwitch({
-//   path: 'isGrayOnNoData',
-//   name: "Use 'Disable' color if no data",
-//   defaultValue: false,
-//   category: ['Other Options'],
-// })
-// .addBooleanSwitch({
-//   path: 'isIgnoreOKColors',
-//   name: 'Ignore color in OK state',
-//   defaultValue: false,
-//   category: ['Other Options'],
-// })
-// .addBooleanSwitch({
-//   path: 'isHideAlertsOnDisable',
-//   name: 'Hide alerts in Disabled state',
-//   defaultValue: false,
-//   category: ['Other Options'],
-// });
 
 /***/ }),
 
