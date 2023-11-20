@@ -30278,7 +30278,7 @@ var StatusPanel = function StatusPanel(_a) {
   console.log('Disables Array:', disables);
   // clear other metrics when disabled and hide on disable
   if (options.isHideAlertsOnDisable && disables.length > 0) {
-    crits = warns = displays = [];
+    crits = warns = displays = annotations = [];
   }
   // flatten and slice sections as needed
   var alerts = [disables, crits, warns, displays].flat(1);
@@ -30298,6 +30298,7 @@ var StatusPanel = function StatusPanel(_a) {
   }, 1000 * options.flipTime);
   // set panel status and render
   var panelStatus = disables.length ? 'disable' : crits.length ? 'crit' : warns.length ? 'warn' : !data.series.length && options.isGrayOnNoData ? 'noData' : 'ok';
+  console.log("Panel status in the status panel is this", panelStatus);
   return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement("div", {
     ref: wrapper,
     className: Object(emotion__WEBPACK_IMPORTED_MODULE_2__["css"])({
@@ -30953,6 +30954,11 @@ __webpack_require__.r(__webpack_exports__);
 
 //export the aliases variable
 var aliases = [];
+var dummyStatusMetricProp = {
+  alias: "",
+  displayValue: undefined,
+  link: undefined
+};
 var aliasStatuses = {};
 function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replaceVariables, timeZone) {
   var annotations = [];
@@ -31175,8 +31181,6 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
               }
             }
             break;
-          case 'Javascript':
-            {}
         }
       }
       //Hannah's code
@@ -31235,11 +31239,35 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
           annotations.push(props);
         }
       } else if (fieldStatus === 'warn') {
-        warns.push(props);
+        warns.push(dummyStatusMetricProp);
+        // If aliasOptions doesn't exist or displayType is 'Regular' or undefined, use 'Regular'
+        if (!aliasOptions || aliasOptions.displayType === 'Regular' || typeof aliasOptions.displayType === 'undefined') {
+          displays.push(props);
+        } else {
+          // If displayType is something other than 'Regular', handle accordingly (e.g., add to annotations)
+          annotations.push(props);
+        }
       } else if (fieldStatus === 'crit') {
-        crits.push(props);
+        crits.push(dummyStatusMetricProp);
+        // If aliasOptions doesn't exist or displayType is 'Regular' or undefined, use 'Regular'
+        if (!aliasOptions || aliasOptions.displayType === 'Regular' || typeof aliasOptions.displayType === 'undefined') {
+          displays.push(props);
+        } else {
+          // If displayType is something other than 'Regular', handle accordingly (e.g., add to annotations)
+          annotations.push(props);
+        }
       } else if (fieldStatus === 'disable') {
-        disables.push(props);
+        disables.push(dummyStatusMetricProp);
+        console.log("Entering this disable section...");
+        console.log(props);
+        if (!aliasOptions || aliasOptions.displayType === 'Regular' || typeof aliasOptions.displayType === 'undefined') {
+          displays.push(props);
+          console.log("Pushed props to display...");
+        } else {
+          // If displayType is something other than 'Regular', handle accordingly (e.g., add to annotations)
+          annotations.push(props);
+          console.log("Pushed props to annotations...");
+        }
       }
     });
   });
@@ -31255,7 +31283,9 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
   });
   //Hannah's code
   var panelStatus = 'ok';
-  if (Object.values(aliasStatuses).includes('crit')) {
+  if (Object.values(aliasStatuses).includes('disable')) {
+    panelStatus = 'disable';
+  } else if (Object.values(aliasStatuses).includes('crit')) {
     panelStatus = 'crit';
   } else if (Object.values(aliasStatuses).includes('warn')) {
     panelStatus = 'warn';
@@ -31268,6 +31298,7 @@ function buildStatusMetricProps(data, fieldConfig, options, colorClasses, replac
       panelStatus = 'warn';
     }
   }
+  console.log("This is the panelStatus", panelStatus);
   return {
     annotations: annotations,
     disables: disables,

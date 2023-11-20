@@ -50,7 +50,7 @@ export const StatusPanel: React.FC<Props> = ({
 
   // clear other metrics when disabled and hide on disable
   if (options.isHideAlertsOnDisable && disables.length > 0) {
-    crits = warns = displays = [];
+    crits = warns = displays = annotations = [];
   }
 
   // flatten and slice sections as needed
@@ -77,6 +77,8 @@ export const StatusPanel: React.FC<Props> = ({
     : !data.series.length && options.isGrayOnNoData
     ? 'noData'
     : 'ok';
+
+    console.log("Panel status in the status panel is this", panelStatus);
 
   return (
     <div

@@ -24,6 +24,13 @@ interface StatusMetricProp extends Omit<React.HTMLAttributes<HTMLDivElement>, 'c
   displayValue?: string | number;
   link?: LinkModel;
 }
+
+const dummyStatusMetricProp: StatusMetricProp = {
+  alias: "", // or some placeholder value
+  displayValue: undefined,
+  link: undefined,
+  // add other properties as required by StatusMetricProp, set to undefined or placeholder values
+};
 let aliasStatuses: Record<string, StatusType> = {};
 
 export function buildStatusMetricProps(
@@ -202,13 +209,13 @@ export function buildStatusMetricProps(
             if (aliasThresholds.valueHandler === 'Javascript' && aliasJavaScript) {
               try {
                 console.log("Entering Javascript Case");
-          
+
                 // Create a new function with 'value' as an argument and the provided JavaScript code as the body
                 const customFunction = new Function('value', aliasJavaScript);
-          
+
                 // Convert value to a string and execute the custom function
                 const result = customFunction(value.toString());
-          
+
                 // Determine the field status based on the result
                 fieldStatus = result ? 'disable' : 'ok';
                 console.log(`FieldStatus is ${fieldStatus}`);
@@ -292,10 +299,7 @@ export function buildStatusMetricProps(
               }
             }
             break;
-          case 'Javascript':
-            {
 
-            }
         }
       }
       //Hannah's code
@@ -351,6 +355,7 @@ export function buildStatusMetricProps(
         props.className = cx(props.className, colorClasses[fieldStatus]);
       }
       // add to appropriate section
+
       if (fieldStatus === 'ok') {
 
         // If aliasOptions doesn't exist or displayType is 'Regular' or undefined, use 'Regular'
@@ -362,14 +367,45 @@ export function buildStatusMetricProps(
 
         }
       } else if (fieldStatus === 'warn') {
-        warns.push(props);
+        warns.push(dummyStatusMetricProp);
+        // If aliasOptions doesn't exist or displayType is 'Regular' or undefined, use 'Regular'
+        if (!aliasOptions || aliasOptions.displayType === 'Regular' || typeof aliasOptions.displayType === 'undefined') {
+          displays.push(props);
+        } else {
+          // If displayType is something other than 'Regular', handle accordingly (e.g., add to annotations)
+          annotations.push(props);
+
+        }
       } else if (fieldStatus === 'crit') {
-        crits.push(props);
+        crits.push(dummyStatusMetricProp);
+        // If aliasOptions doesn't exist or displayType is 'Regular' or undefined, use 'Regular'
+        if (!aliasOptions || aliasOptions.displayType === 'Regular' || typeof aliasOptions.displayType === 'undefined') {
+          displays.push(props);
+        } else {
+          // If displayType is something other than 'Regular', handle accordingly (e.g., add to annotations)
+          annotations.push(props);
+
+        }
+
       } else if (fieldStatus === 'disable') {
-        disables.push(props);
+
+        disables.push(dummyStatusMetricProp);
+        console.log("Entering this disable section...")
+        console.log(props);
+        if (!aliasOptions || aliasOptions.displayType === 'Regular' || typeof aliasOptions.displayType === 'undefined') {
+          displays.push(props);
+          console.log("Pushed props to display...")
+        } else {
+          // If displayType is something other than 'Regular', handle accordingly (e.g., add to annotations)
+          annotations.push(props);
+          console.log("Pushed props to annotations...")
+
+
+        }
       }
     });
   });
+
 
   // Handle aliases with no data
   expectedAliases.forEach(aliasName => {
@@ -386,7 +422,10 @@ export function buildStatusMetricProps(
 
   //Hannah's code
   let panelStatus: StatusType = 'ok';
-  if (Object.values(aliasStatuses).includes('crit')) {
+
+  if (Object.values(aliasStatuses).includes('disable')) {
+    panelStatus = 'disable';
+  } else if (Object.values(aliasStatuses).includes('crit')) {
     panelStatus = 'crit';
   } else if (Object.values(aliasStatuses).includes('warn')) {
     panelStatus = 'warn';
@@ -399,6 +438,8 @@ export function buildStatusMetricProps(
       panelStatus = 'warn';
     }
   }
+
+  console.log("This is the panelStatus", panelStatus);
 
   return { annotations, disables, crits, warns, displays, panelStatus };
 }
