@@ -78,7 +78,7 @@ export const StatusPanel: React.FC<Props> = ({
     ? 'noData'
     : 'ok';
 
-    console.log("Panel status in the status panel is this", panelStatus);
+    console.log("Panel status in the status panel is this", panelStatus)
 
   return (
     <div

@@ -30704,7 +30704,9 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
         fontFormat: newFontFormat
       }));
     }
-  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Aggregation Method"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], {
+    title: "What to do if the query returns multiple data points"
+  }, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Aggregation Method")), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
     value: value.aggregation,
     options: aggregationOptions,
     onChange: function onChange(_a) {
@@ -30713,7 +30715,7 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
         aggregation: newAggregation
       }));
     }
-  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Display Alias Type"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+  })), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Display Alias Type"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
     value: value.displayAliasType,
     options: displayAliasType,
     onChange: function onChange(_a) {
@@ -30740,7 +30742,7 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
         displayType: newDisplayType
       }));
     }
-  }), "Date Format Input", react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Date Format"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
+  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Date Format"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
     type: "text",
     value: value.dateFormat || '',
     onChange: function onChange(e) {

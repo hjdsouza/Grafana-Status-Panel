@@ -1,5 +1,6 @@
 import { FieldOverrideEditorProps, SelectableValue } from '@grafana/data';
 import { Button, Input, Label, Select } from '@grafana/ui';
+import { Tooltip } from '@grafana/ui';
 import React from 'react';
 import { useState } from 'react';
 import AceEditor from 'react-ace';
@@ -227,12 +228,16 @@ const SingleAliasThresholdEditor: React.FC<{
             onChange={({ value: newFontFormat }) => onChange({ ...value, fontFormat: newFontFormat })}
           />
           {/* Aggregation select component */}
-          <Label>Aggregation Method</Label>
-          <Select
-            value={value.aggregation}
-            options={aggregationOptions}
-            onChange={({ value: newAggregation }) => onChange({ ...value, aggregation: newAggregation })}
-          />
+          <>
+            <Label title="What to do if the query returns multiple data points">
+              <Label>Aggregation Method</Label>
+            </Label>
+            <Select
+              value={value.aggregation}
+              options={aggregationOptions}
+              onChange={({ value: newAggregation }) => onChange({ ...value, aggregation: newAggregation })}
+            />
+          </>
           <Label>Display Alias Type</Label>
           <Select
             value={value.displayAliasType}
@@ -251,7 +256,6 @@ const SingleAliasThresholdEditor: React.FC<{
             options={displayType}
             onChange={({ value: newDisplayType }) => onChange({ ...value, displayType: newDisplayType })}
           />
-          Date Format Input
           <Label>Date Format</Label>
           <Input
             type="text"
@@ -285,7 +289,7 @@ const SingleAliasThresholdEditor: React.FC<{
             options={displayType}
             onChange={({ value: newDisplayType }) => onChange({ ...value, displayType: newDisplayType })}
           />
-                    <Label>JavaScript Code</Label>
+          <Label>JavaScript Code</Label>
           <AceEditor
             mode="javascript"
             theme="monokai"
