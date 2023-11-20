@@ -1,6 +1,5 @@
 import { FieldOverrideEditorProps, SelectableValue } from '@grafana/data';
 import { Button, Input, Label, Select } from '@grafana/ui';
-import { Tooltip } from '@grafana/ui';
 import React from 'react';
 import { useState } from 'react';
 import AceEditor from 'react-ace';
@@ -238,24 +237,45 @@ const SingleAliasThresholdEditor: React.FC<{
               onChange={({ value: newAggregation }) => onChange({ ...value, aggregation: newAggregation })}
             />
           </>
-          <Label>Display Alias Type</Label>
-          <Select
-            value={value.displayAliasType}
-            options={displayAliasType}
-            onChange={({ value: newDisplayAliasType }) => onChange({ ...value, displayAliasType: newDisplayAliasType })}
-          />
-          <Label>Display Value with Alias</Label>
-          <Select
-            value={value.displayValueWithAlias}
-            options={displayValueWithAlias}
-            onChange={({ value: newDisplayValueWithAlias }) => onChange({ ...value, displayValueWithAlias: newDisplayValueWithAlias })}
-          />
-          <Label>Display Position</Label>
-          <Select
-            value={value.displayType}
-            options={displayType}
-            onChange={({ value: newDisplayType }) => onChange({ ...value, displayType: newDisplayType })}
-          />
+          <>
+            <Label title="When to display the alias: 
+  Warning / Critical - The alias will be displayed in warning or critical state. 
+  Always - The alias will always be displayed, regardless of the critical and warning state.">
+              Display Alias Type
+            </Label>
+            <Select
+              value={value.displayAliasType}
+              options={displayAliasType}
+              onChange={({ value: newDisplayAliasType }) => onChange({ ...value, displayAliasType: newDisplayAliasType })}
+            />
+          </>
+
+          <>
+            <Label title="When to display the value along with the alias: 
+  Never - The value will never be displayed. 
+  When Alias Displayed - The value will be displayed always when the alias is displayed. 
+  Warning / Critical - The value will be displayed in warning or critical state. 
+  Critical Only - The value will be displayed in critical state only.">
+              Display Value with Alias
+            </Label>
+            <Select
+              value={value.displayValueWithAlias}
+              options={displayValueWithAlias}
+              onChange={({ value: newDisplayValueWithAlias }) => onChange({ ...value, displayValueWithAlias: newDisplayValueWithAlias })}
+            />
+          </>
+          <>
+            <Label title="The location the value will be displayed: 
+  Regular - The alias + the value will be displayed in the center, under the panel title. 
+  Annotation - The alias + the value will be displayed on the top left. If the value meets a threshold condition, it will be displayed as in the regular state.">
+              Display Position
+            </Label>
+            <Select
+              value={value.displayType}
+              options={displayType}
+              onChange={({ value: newDisplayType }) => onChange({ ...value, displayType: newDisplayType })}
+            />
+          </>
           <Label>Date Format</Label>
           <Input
             type="text"

@@ -30715,7 +30715,9 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
         aggregation: newAggregation
       }));
     }
-  })), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Display Alias Type"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+  })), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], {
+    title: "When to display the alias: \r\n  Warning / Critical - The alias will be displayed in warning or critical state. \r\n  Always - The alias will always be displayed, regardless of the critical and warning state."
+  }, "Display Alias Type"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
     value: value.displayAliasType,
     options: displayAliasType,
     onChange: function onChange(_a) {
@@ -30724,7 +30726,9 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
         displayAliasType: newDisplayAliasType
       }));
     }
-  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Display Value with Alias"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+  })), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], {
+    title: "When to display the value along with the alias: \r\n  Never - The value will never be displayed. \r\n  When Alias Displayed - The value will be displayed always when the alias is displayed. \r\n  Warning / Critical - The value will be displayed in warning or critical state. \r\n  Critical Only - The value will be displayed in critical state only."
+  }, "Display Value with Alias"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
     value: value.displayValueWithAlias,
     options: displayValueWithAlias,
     onChange: function onChange(_a) {
@@ -30733,7 +30737,9 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
         displayValueWithAlias: newDisplayValueWithAlias
       }));
     }
-  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Display Position"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
+  })), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_2___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], {
+    title: "The location the value will be displayed: \r\n  Regular - The alias + the value will be displayed in the center, under the panel title. \r\n  Annotation - The alias + the value will be displayed on the top left. If the value meets a threshold condition, it will be displayed as in the regular state."
+  }, "Display Position"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Select"], {
     value: value.displayType,
     options: displayType,
     onChange: function onChange(_a) {
@@ -30742,7 +30748,7 @@ var SingleAliasThresholdEditor = function SingleAliasThresholdEditor(_a) {
         displayType: newDisplayType
       }));
     }
-  }), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Date Format"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
+  })), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Label"], null, "Date Format"), react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(_grafana_ui__WEBPACK_IMPORTED_MODULE_1__["Input"], {
     type: "text",
     value: value.dateFormat || '',
     onChange: function onChange(e) {
