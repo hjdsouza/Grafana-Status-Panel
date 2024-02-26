@@ -135,6 +135,6 @@ export const statusPanelOptionsBuilder = (builder: PanelOptionsEditorBuilder<Sta
         ok: '#00FF00',    // Green for OK
         disable: '#000000' // Or any color for Disabled
       },
-      description: 'Default colors: Red for Critical, Yellow for Warning, Green for OK, and Black for Disabled. Customize as needed.',
+      description: 'Default colors: Red for Critical, Orange for Warning, Green for OK, and Black for Disabled. Customize as needed.',
       category: ['Threshold Options'],
     })
